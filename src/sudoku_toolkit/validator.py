@@ -30,3 +30,4 @@ def is_valid(board):
                 return False
 
     return True
+
