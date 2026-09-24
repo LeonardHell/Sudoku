@@ -1,3 +1,5 @@
+import pytest
+
 from sudoku_toolkit.validator import is_valid
 from sudoku_toolkit.solver import count_solutions
 from sudoku_toolkit.generator import (
@@ -39,7 +41,7 @@ def test_generate_puzzle_is_valid():
 def test_generate_puzzle_has_correct_number_of_clues():
     """The generated puzzle has the requested number of clues."""
 
-    board = generate_puzzle(clues=35)
+    board = generate_puzzle(clues=36)
 
     clues = sum(
         value != 0
@@ -47,28 +49,72 @@ def test_generate_puzzle_has_correct_number_of_clues():
         for value in row
     )
 
-    assert clues == 35
+    assert clues == 36
 
 
 def test_generate_puzzle_has_unique_solution():
     """The generated puzzle has exactly one solution."""
 
-    board = generate_puzzle(clues=35)
+    board = generate_puzzle()
 
     assert count_solutions(board, limit=2) == 1
 
 
 def test_generate_puzzle_rejects_invalid_clues():
     """Invalid clue counts raise a ValueError."""
-
-    try:
+    with pytest.raises(ValueError):
         generate_puzzle(clues=16)
-        assert False
-    except ValueError:
-        pass
 
-    try:
+    with pytest.raises(ValueError):
         generate_puzzle(clues=82)
-        assert False
-    except ValueError:
-        pass
+
+def test_generate_easy_puzzle():
+    """An easy puzzle has 40 clues."""
+
+    board = generate_puzzle(difficulty="easy")
+
+    clues = sum(
+        value != 0
+        for row in board.values
+        for value in row
+    )
+
+    assert clues == 40
+    assert count_solutions(board, limit=2) == 1
+
+
+def test_generate_medium_puzzle():
+    """A medium puzzle has 32 clues."""
+
+    board = generate_puzzle(difficulty="medium")
+
+    clues = sum(
+        value != 0
+        for row in board.values
+        for value in row
+    )
+
+    assert clues == 32
+    assert count_solutions(board, limit=2) == 1
+
+
+def test_generate_hard_puzzle():
+    """A hard puzzle has 25 clues."""
+
+    board = generate_puzzle(difficulty="hard")
+
+    clues = sum(
+        value != 0
+        for row in board.values
+        for value in row
+    )
+
+    assert clues == 25
+    assert count_solutions(board, limit=2) == 1
+
+
+def test_generate_puzzle_rejects_invalid_difficulty():
+    """An invalid difficulty raises a ValueError."""
+
+    with pytest.raises(ValueError):
+        generate_puzzle(difficulty="impossible")
