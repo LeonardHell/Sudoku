@@ -95,3 +95,40 @@ def _is_valid_move(values, row, column, number):
                 return False
 
     return True
+
+def count_solutions(board, limit=2):
+    """Count the number of solutions of a Sudoku board.
+
+    Stop searching once the number of solutions reaches limit.
+    """
+    values = [row.copy() for row in board.values]
+
+    if not is_valid(Board(values)):
+        return 0
+
+    return _count_solutions(values, limit)
+
+
+def _count_solutions(values, limit):
+    """Recursively count Sudoku solutions."""
+
+    empty_position = _find_empty_position(values)
+
+    if empty_position is None:
+        return 1
+
+    row, column = empty_position
+    solution_count = 0
+
+    for number in range(1, 10):
+        if _is_valid_move(values, row, column, number):
+            values[row][column] = number
+
+            solution_count += _count_solutions(values, limit)
+
+            values[row][column] = 0
+
+            if solution_count >= limit:
+                return solution_count
+
+    return solution_count

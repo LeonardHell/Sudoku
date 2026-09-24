@@ -4,6 +4,7 @@ from sudoku_toolkit.solver import (
     solve,
     _get_possible_values,
     _find_empty_position,
+    count_solutions
 )
 
 def test_solver_solves_sudoku():
@@ -145,3 +146,69 @@ def test_find_empty_position_uses_mrv():
     position = _find_empty_position(values)
 
     assert position in [(4, 4), (6, 5), (6, 8), (7, 7)]
+
+def test_count_solutions_no_solution():
+    """An invalid Sudoku has no solutions."""
+
+    board = Board([
+        [5, 3, 5, 0, 7, 0, 0, 0, 0],
+        [6, 0, 0, 1, 9, 5, 0, 0, 0],
+        [0, 9, 8, 0, 0, 0, 0, 6, 0],
+        [8, 0, 0, 0, 6, 0, 0, 0, 3],
+        [4, 0, 0, 8, 0, 3, 0, 0, 1],
+        [7, 0, 0, 0, 2, 0, 0, 0, 6],
+        [0, 6, 0, 0, 0, 0, 2, 8, 0],
+        [0, 0, 0, 4, 1, 9, 0, 0, 5],
+        [0, 0, 0, 0, 8, 0, 0, 7, 9],
+    ])
+
+    assert count_solutions(board) == 0
+
+
+def test_count_solutions_one_solution():
+    """A Sudoku with a unique solution has exactly one solution."""
+
+    board = Board([
+        [5, 3, 0, 0, 7, 0, 0, 0, 0],
+        [6, 0, 0, 1, 9, 5, 0, 0, 0],
+        [0, 9, 8, 0, 0, 0, 0, 6, 0],
+        [8, 0, 0, 0, 6, 0, 0, 0, 3],
+        [4, 0, 0, 8, 0, 3, 0, 0, 1],
+        [7, 0, 0, 0, 2, 0, 0, 0, 6],
+        [0, 6, 0, 0, 0, 0, 2, 8, 0],
+        [0, 0, 0, 4, 1, 9, 0, 0, 5],
+        [0, 0, 0, 0, 8, 0, 0, 7, 9],
+    ])
+
+    assert count_solutions(board) == 1
+
+def test_count_solutions_multiple_solutions():
+    """An empty Sudoku has multiple solutions."""
+
+    board_empty = Board([
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ])
+
+    """Board with multiple solutions."""
+    board_scarse = Board([
+        [5, 0, 0, 0, 0, 0, 6, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 3, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 4, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1, 0],
+        [2, 0, 0, 0, 8, 0, 0, 0, 0],
+    ])
+
+    assert count_solutions(board_empty, limit=2) == 2
+    assert count_solutions(board_scarse, limit=2) == 2
