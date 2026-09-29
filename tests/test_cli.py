@@ -1,10 +1,12 @@
 import sys
 
-from sudoku_toolkit.board import Board
+import pytest
+
 from sudoku_toolkit import cli
+from sudoku_toolkit.board import Board
 
 
-VALID_BOARD = Board([
+VALID_VALUES = [
     [5, 3, 0, 0, 7, 0, 0, 0, 0],
     [6, 0, 0, 1, 9, 5, 0, 0, 0],
     [0, 9, 8, 0, 0, 0, 0, 6, 0],
@@ -14,7 +16,10 @@ VALID_BOARD = Board([
     [0, 6, 0, 0, 0, 0, 2, 8, 0],
     [0, 0, 0, 4, 1, 9, 0, 0, 5],
     [0, 0, 0, 0, 8, 0, 0, 7, 9],
-])
+]
+
+
+VALID_BOARD = Board(VALID_VALUES)
 
 
 def test_generate_command(monkeypatch, capsys):
@@ -35,6 +40,39 @@ def test_generate_command(monkeypatch, capsys):
     captured = capsys.readouterr()
 
     assert captured.out == str(VALID_BOARD) + "\n"
+
+
+def test_generate_with_output(monkeypatch, tmp_path):
+    output_file = tmp_path / "solution.txt"
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["sudoku", "generate", "--output", str(output_file)]
+    )
+
+    monkeypatch.setattr(
+        cli,
+        "generate_solution",
+        lambda: VALID_BOARD
+    )
+
+    saved = {}
+
+    def fake_save_board(board, filename):
+        saved["board"] = board
+        saved["filename"] = filename
+
+    monkeypatch.setattr(
+        cli,
+        "save_board",
+        fake_save_board
+    )
+
+    cli.main()
+
+    assert saved["board"] is VALID_BOARD
+    assert saved["filename"] == str(output_file)
 
 
 def test_puzzle_command(monkeypatch, capsys):
@@ -105,6 +143,39 @@ def test_puzzle_with_clues(monkeypatch, capsys):
     assert captured.out == str(VALID_BOARD) + "\n"
 
 
+def test_puzzle_with_output(monkeypatch, tmp_path):
+    output_file = tmp_path / "puzzle.txt"
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["sudoku", "puzzle", "--output", str(output_file)]
+    )
+
+    monkeypatch.setattr(
+        cli,
+        "generate_puzzle",
+        lambda difficulty=None: VALID_BOARD
+    )
+
+    saved = {}
+
+    def fake_save_board(board, filename):
+        saved["board"] = board
+        saved["filename"] = filename
+
+    monkeypatch.setattr(
+        cli,
+        "save_board",
+        fake_save_board
+    )
+
+    cli.main()
+
+    assert saved["board"] is VALID_BOARD
+    assert saved["filename"] == str(output_file)
+
+
 def test_solve_command(monkeypatch, capsys):
     monkeypatch.setattr(
         sys,
@@ -155,6 +226,51 @@ def test_solve_unsolvable(monkeypatch, capsys):
     captured = capsys.readouterr()
 
     assert captured.out == "The Sudoku has no solution.\n"
+
+
+def test_solve_with_output(monkeypatch, tmp_path):
+    output_file = tmp_path / "solution.txt"
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "sudoku",
+            "solve",
+            "puzzle.txt",
+            "--output",
+            str(output_file)
+        ]
+    )
+
+    monkeypatch.setattr(
+        cli,
+        "load_board",
+        lambda filename: VALID_BOARD
+    )
+
+    monkeypatch.setattr(
+        cli,
+        "solve",
+        lambda board: VALID_BOARD
+    )
+
+    saved = {}
+
+    def fake_save_board(board, filename):
+        saved["board"] = board
+        saved["filename"] = filename
+
+    monkeypatch.setattr(
+        cli,
+        "save_board",
+        fake_save_board
+    )
+
+    cli.main()
+
+    assert saved["board"] is VALID_BOARD
+    assert saved["filename"] == str(output_file)
 
 
 def test_validate_valid(monkeypatch, capsys):
@@ -225,3 +341,23 @@ def test_no_command(monkeypatch, capsys):
     assert "puzzle" in captured.out
     assert "solve" in captured.out
     assert "validate" in captured.out
+
+
+def test_save_board_error(monkeypatch):
+    parser = cli.argparse.ArgumentParser()
+
+    def fake_save_board(board, filename):
+        raise ValueError("Unsupported file format")
+
+    monkeypatch.setattr(
+        cli,
+        "save_board",
+        fake_save_board
+    )
+
+    with pytest.raises(SystemExit):
+        cli._save_board(
+            VALID_BOARD,
+            "puzzle.json",
+            parser
+        )
