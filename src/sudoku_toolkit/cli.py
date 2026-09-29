@@ -1,5 +1,6 @@
 import argparse
 
+from .io import _create_board, load_txt, load_csv, load_board, save_board, save_csv, save_txt
 from .board import Board
 from .generator import generate_puzzle, generate_solution
 from .solver import solve
@@ -70,7 +71,7 @@ def main():
         print(board)
 
     elif args.command == "solve":
-        board = _load_board(args.filename)
+        board = load_board(args.filename)
         solution = solve(board)
 
         if solution is None:
@@ -79,7 +80,7 @@ def main():
             print(solution)
 
     elif args.command == "validate":
-        board = _load_board(args.filename)
+        board = load_board(args.filename)
 
         if is_valid(board):
             print("The Sudoku is valid.")
