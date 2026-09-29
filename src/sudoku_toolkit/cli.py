@@ -1,10 +1,18 @@
 import argparse
 
-from .io import _create_board, load_txt, load_csv, load_board, save_board, save_csv, save_txt
-from .board import Board
+from .io import load_board
 from .generator import generate_puzzle, generate_solution
 from .solver import solve
 from .validator import is_valid
+
+
+def _load_board(filename, parser):
+    """Load a Sudoku board and report errors through argparse."""
+
+    try:
+        return load_board(filename)
+    except ValueError as error:
+        parser.error(str(error))
 
 
 def main():
@@ -14,7 +22,7 @@ def main():
 
     subparsers = parser.add_subparsers(dest="command")
 
-    generate_parser = subparsers.add_parser(
+    subparsers.add_parser(
         "generate",
         help="Generate a solved Sudoku."
     )
@@ -63,15 +71,20 @@ def main():
         print(board)
 
     elif args.command == "puzzle":
-        if args.clues is not None:
-            board = generate_puzzle(clues=args.clues)
-        else:
-            board = generate_puzzle(difficulty=args.difficulty)
+        try:
+            if args.clues is not None:
+                board = generate_puzzle(clues=args.clues)
+            else:
+                board = generate_puzzle(
+                    difficulty=args.difficulty
+                )
+        except ValueError as error:
+            parser.error(str(error))
 
         print(board)
 
     elif args.command == "solve":
-        board = load_board(args.filename)
+        board = _load_board(args.filename, parser)
         solution = solve(board)
 
         if solution is None:
@@ -80,7 +93,7 @@ def main():
             print(solution)
 
     elif args.command == "validate":
-        board = load_board(args.filename)
+        board = _load_board(args.filename, parser)
 
         if is_valid(board):
             print("The Sudoku is valid.")
