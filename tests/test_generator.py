@@ -118,3 +118,9 @@ def test_generate_puzzle_rejects_invalid_difficulty():
 
     with pytest.raises(ValueError):
         generate_puzzle(difficulty="impossible")
+
+def test_generate_puzzle_rejects_clues_and_difficulty():
+    """Clues and difficulty set simultaneously raise a ValueError."""
+
+    with pytest.raises(ValueError):
+        generate_puzzle(clues=30, difficulty='hard')

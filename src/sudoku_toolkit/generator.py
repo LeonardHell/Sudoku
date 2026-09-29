@@ -73,6 +73,9 @@ def generate_puzzle(clues=None, difficulty=None, max_attempts=100):
         RuntimeError: If no suitable puzzle is found within max_attempts.
     """
 
+    if clues is not None and difficulty is not None:
+        raise ValueError("clues and difficulty cannot both be set simultaneously. Set EITHER clues OR diffuculty")
+
     Default_clues = 35
 
     if clues is None:
