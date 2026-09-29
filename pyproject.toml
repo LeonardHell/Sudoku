@@ -18,5 +18,8 @@ test = [
     "pytest-cov>=4",
 ]
 
+[project.scripts]
+sudoku = "sudoku_toolkit.cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
