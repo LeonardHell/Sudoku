@@ -4,7 +4,8 @@ from sudoku_toolkit.solver import (
     solve,
     _get_possible_values,
     _find_empty_position,
-    count_solutions
+    count_solutions,
+    _is_valid_move
 )
 
 def test_solver_solves_sudoku():
@@ -114,6 +115,75 @@ def test_solver_accepts_solved_board():
 
     assert solved_board is not None
     assert solved_board.values == values
+
+def test_solve_returns_none_for_unsolvable_board():
+    """An internally valid but unsolvable Sudoku returns None."""
+
+    board = Board([
+        [6, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 7, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 6, 0],
+        [0, 0, 0, 0, 6, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 9, 0, 6, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 6, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ])
+
+    assert is_valid(board)
+    assert solve(board) is None
+
+def test_is_valid_move_rejects_column_conflict():
+    """A number already present in the column cannot be placed."""
+
+    values = [
+        [5, 3, 0, 0, 7, 0, 0, 0, 0],
+        [6, 0, 0, 1, 9, 5, 0, 0, 0],
+        [0, 9, 8, 0, 0, 0, 0, 6, 0],
+        [8, 0, 0, 0, 6, 0, 0, 0, 3],
+        [4, 0, 0, 8, 0, 3, 0, 0, 1],
+        [7, 0, 0, 0, 2, 0, 0, 0, 6],
+        [0, 6, 0, 0, 0, 0, 2, 8, 0],
+        [0, 0, 0, 4, 1, 9, 0, 0, 5],
+        [0, 0, 0, 0, 8, 0, 0, 7, 9],
+    ]
+
+    assert not _is_valid_move(values, 0, 2, 8)
+
+def test_is_valid_move_rejects_row_conflict():
+    """A number already present in the column cannot be placed."""
+
+    values = [
+        [5, 3, 0, 0, 7, 0, 0, 0, 0],
+        [6, 0, 0, 1, 9, 5, 0, 0, 0],
+        [0, 9, 8, 0, 0, 0, 0, 6, 0],
+        [8, 0, 0, 0, 6, 0, 0, 0, 3],
+        [4, 0, 0, 8, 0, 3, 0, 0, 1],
+        [7, 0, 0, 0, 2, 0, 0, 0, 6],
+        [0, 6, 0, 0, 0, 0, 2, 8, 0],
+        [0, 0, 0, 4, 1, 9, 0, 0, 5],
+        [0, 0, 0, 0, 8, 0, 0, 7, 9],
+    ]
+
+    assert not _is_valid_move(values, 0, 2, 7)
+
+def test_is_valid_move_rejects_block_conflict():
+    """A number already present in the column cannot be placed."""
+
+    values = [
+        [5, 3, 0, 0, 7, 0, 0, 0, 0],
+        [6, 0, 0, 1, 9, 5, 0, 0, 0],
+        [0, 9, 8, 0, 0, 0, 0, 6, 0],
+        [8, 0, 0, 0, 6, 0, 0, 0, 3],
+        [4, 0, 0, 8, 0, 3, 0, 0, 1],
+        [7, 0, 0, 0, 2, 0, 0, 0, 6],
+        [0, 6, 0, 0, 0, 0, 2, 8, 0],
+        [0, 0, 0, 4, 1, 9, 0, 0, 5],
+        [0, 0, 0, 0, 8, 0, 0, 7, 9],
+    ]
+
+    assert not _is_valid_move(values, 0, 2, 6)
 
 def test_get_possible_values():
     values = [
