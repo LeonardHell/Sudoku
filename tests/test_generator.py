@@ -124,3 +124,18 @@ def test_generate_puzzle_rejects_clues_and_difficulty():
 
     with pytest.raises(ValueError):
         generate_puzzle(clues=30, difficulty='hard')
+
+def test_generate_puzzle_rejects_invalid_max_attempts():
+    """An invalid max_attempt number is rejected."""
+
+    with pytest.raises(ValueError):
+        generate_puzzle(max_attempts=0)
+
+def test_generate_puzzle_raises_runtime_error():
+    """
+    For a 17-clue Sudoku 1 attempt is highly unlikely to be enugh for generation and should therefore raise a runtime error.
+    This test could theoretically fail.
+    """
+
+    with pytest.raises(RuntimeError):
+            generate_puzzle(clues=17, max_attempts=1)
