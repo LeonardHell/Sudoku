@@ -1,9 +1,11 @@
+import argparse
 import sys
-
+import runpy
 import pytest
 
 from sudoku_toolkit import cli
 from sudoku_toolkit.board import Board
+from sudoku_toolkit.solver import is_valid
 
 
 VALID_VALUES = [
@@ -361,3 +363,49 @@ def test_save_board_error(monkeypatch):
             "puzzle.json",
             parser
         )
+
+def test_load_board_unsupported_format(tmp_path, capsys):
+    """Unsupported file formats are reported through the CLI."""
+
+    filename = tmp_path / "puzzle.xlsx"
+    parser = argparse.ArgumentParser()
+
+    with pytest.raises(SystemExit) as error:
+        cli._load_board(filename, parser)
+
+    assert error.value.code == 2
+
+    captured = capsys.readouterr()
+    assert "Unsupported file format" in captured.err
+    assert "Supported formats are: .txt, .csv" in captured.err
+
+def test_puzzle_generation_error(monkeypatch, capsys):
+    """The CLI reports invalid clue counts."""
+
+    monkeypatch.setattr(
+        "sys.argv",
+        ["sudoku-toolkit", "puzzle", "--clues", "10"]
+    )
+
+    with pytest.raises(SystemExit) as error:
+        cli.main()
+
+    assert error.value.code == 2
+
+    captured = capsys.readouterr()
+    assert "clues must be between 17 and 81" in captured.err
+
+def test_cli_entry_point_without_command(monkeypatch, capsys):
+    """The module entry point displays help without a command."""
+
+    monkeypatch.setattr(sys, "argv", ["sudoku-toolkit"])
+    monkeypatch.delitem(
+        sys.modules, "sudoku_toolkit.cli", raising=False
+    )
+
+    runpy.run_module("sudoku_toolkit.cli", run_name="__main__")
+
+    captured = capsys.readouterr()
+    assert "usage:" in captured.out.lower()
+    assert "generate" in captured.out
+    assert "solve" in captured.out
