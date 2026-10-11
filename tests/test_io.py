@@ -261,3 +261,41 @@ def test_save_board_unsupported_format(tmp_path):
         match="Unsupported file format"
     ):
         save_board(board, filename)
+
+def test_load_csv_skips_empty_rows(tmp_path):
+    """Empty rows in a CSV file are skipped."""
+
+    filename = tmp_path / "puzzle.csv"
+
+    rows = [
+        "5,3,0,0,7,0,0,0,0",
+        "6,0,0,1,9,5,0,0,0",
+        "0,9,8,0,0,0,0,6,0",
+        "8,0,0,0,6,0,0,0,3",
+        "4,0,0,8,0,3,0,0,1",
+        "7,0,0,0,2,0,0,0,6",
+        "0,6,0,0,0,0,2,8,0",
+        "0,0,0,4,1,9,0,0,5",
+        "0,0,0,0,8,0,0,7,9",
+    ]
+
+    filename.write_text(
+        "\n".join(rows[:4]) + "\n\n" + "\n".join(rows[4:]),
+        encoding="utf-8",
+    )
+
+    board = load_csv(filename)
+
+    assert len(board.values) == 9
+    assert board.values[0] == [5, 3, 0, 0, 7, 0, 0, 0, 0]
+
+def test_load_csv_file_not_found(tmp_path):
+    """A missing CSV file raises a ValueError."""
+
+    filename = tmp_path / "missing.csv"
+
+    with pytest.raises(
+        ValueError,
+        match="File not found",
+    ):
+        load_csv(filename)
