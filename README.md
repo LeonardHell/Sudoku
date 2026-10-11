@@ -172,10 +172,3 @@ The solver uses a **backtracking algorithm**. Empty cells are filled recursively
 The generator first creates a complete valid Sudoku and then removes numbers while checking that the resulting puzzle still has a unique solution.
 
 Solution counting stops after the specified limit is reached. This avoids unnecessary computation when only uniqueness needs to be determined.
-
-## Current Limitations
-
-* Difficulty is currently determined by the number of given clues.
-* The solver uses backtracking rather than human-style Sudoku solving strategies.
-* The generator may require multiple attempts to produce puzzles with a low number of clues.
-* The project currently provides a Python API; a command-line interface is planned.
