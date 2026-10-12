@@ -5,8 +5,13 @@ def _unit_is_valid(values):
 
 
 def is_valid(board):
-    """Check whether a Sudoku board satisfies the Sudoku rules."""
+    """Check grid structure, value range, and Sudoku rules."""
 
+    try:
+        board.validate_structure()
+    except ValueError:
+        return False
+    
     # Check rows
     for row in board.values:
         if not _unit_is_valid(row):

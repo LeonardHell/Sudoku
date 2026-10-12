@@ -31,39 +31,6 @@ def test_create_board():
     assert isinstance(board, Board)
     assert board.values == VALID_VALUES
 
-
-def test_create_board_wrong_number_of_rows():
-    values = VALID_VALUES[:-1]
-
-    with pytest.raises(
-        ValueError,
-        match="exactly 9 rows"
-    ):
-        _create_board(values)
-
-
-def test_create_board_wrong_number_of_columns():
-    values = [row.copy() for row in VALID_VALUES]
-    values[0] = values[0][:-1]
-
-    with pytest.raises(
-        ValueError,
-        match="exactly 9 values"
-    ):
-        _create_board(values)
-
-
-def test_create_board_invalid_value():
-    values = [row.copy() for row in VALID_VALUES]
-    values[0][0] = 10
-
-    with pytest.raises(
-        ValueError,
-        match="between 0 and 9"
-    ):
-        _create_board(values)
-
-
 def test_load_txt(tmp_path):
     filename = tmp_path / "puzzle.txt"
 

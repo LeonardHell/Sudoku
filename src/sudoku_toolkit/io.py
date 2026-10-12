@@ -7,26 +7,9 @@ from .board import Board
 def _create_board(rows):
     """Create a Board after validating its dimensions and values."""
 
-    if len(rows) != 9:
-        raise ValueError(
-            "A Sudoku board must contain exactly 9 rows."
-        )
-
-    if any(len(row) != 9 for row in rows):
-        raise ValueError(
-            "Each Sudoku row must contain exactly 9 values."
-        )
-
-    if any(
-        value < 0 or value > 9
-        for row in rows
-        for value in row
-    ):
-        raise ValueError(
-            "Sudoku values must be between 0 and 9."
-        )
-
-    return Board(rows)
+    board = Board(rows)
+    board.validate_structure()
+    return board
 
 
 def load_txt(filename):

@@ -8,10 +8,10 @@ def solve(board):
     Return a solved Board if a solution exists.
     Return None if the Sudoku has no solution.
     """
-    values = [row.copy() for row in board.values]
-
-    if not is_valid(Board(values)):
+    if not is_valid(board):
         return None
+
+    values = [row.copy() for row in board.values]
 
     if _solve_values(values):
         return Board(values)
@@ -101,11 +101,11 @@ def count_solutions(board, limit=2):
 
     Stop searching once the number of solutions reaches limit.
     """
+    if not is_valid(board):
+            return 0
+    
     values = [row.copy() for row in board.values]
-
-    if not is_valid(Board(values)):
-        return 0
-
+    
     return _count_solutions(values, limit)
 
 
