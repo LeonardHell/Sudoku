@@ -282,3 +282,37 @@ def test_count_solutions_multiple_solutions():
 
     assert count_solutions(board_empty, limit=2) == 2
     assert count_solutions(board_scarse, limit=2) == 2
+
+def test_count_solutions_does_not_exceed_limit():
+    """Stop at the limit even when multiple branches contain solutions."""
+
+    board = Board([
+        [0, 0, 0, 0, 5, 0, 0, 0, 3],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 9, 0, 0, 0, 0, 7],
+        [1, 5, 0, 0, 6, 0, 0, 0, 0],
+        [0, 0, 0, 0, 9, 0, 0, 5, 0],
+        [2, 0, 0, 5, 0, 3, 0, 0, 9],
+        [0, 0, 0, 7, 0, 9, 0, 0, 0],
+        [9, 0, 0, 0, 0, 0, 0, 0, 5],
+        [7, 1, 0, 0, 2, 0, 0, 9, 0],
+    ])
+
+    assert count_solutions(board, limit=2) == 2
+
+def test_count_solution_returns_0():
+    """Return 0 if 0 is the limit."""
+
+    board = Board([
+        [0, 0, 0, 0, 5, 0, 0, 0, 3],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 9, 0, 0, 0, 0, 7],
+        [1, 5, 0, 0, 6, 0, 0, 0, 0],
+        [0, 0, 0, 0, 9, 0, 0, 5, 0],
+        [2, 0, 0, 5, 0, 3, 0, 0, 9],
+        [0, 0, 0, 7, 0, 9, 0, 0, 0],
+        [9, 0, 0, 0, 0, 0, 0, 0, 5],
+        [7, 1, 0, 0, 2, 0, 0, 9, 0],
+    ])
+
+    assert count_solutions(board, limit=0) == 0

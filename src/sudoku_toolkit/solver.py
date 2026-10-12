@@ -110,7 +110,10 @@ def count_solutions(board, limit=2):
 
 
 def _count_solutions(values, limit):
-    """Recursively count Sudoku solutions."""
+    """Count solutions, stopping once the specified limit is reached."""
+
+    if limit <= 0:
+        return 0
 
     empty_position = _find_empty_position(values)
 
@@ -124,7 +127,7 @@ def _count_solutions(values, limit):
         if _is_valid_move(values, row, column, number):
             values[row][column] = number
 
-            solution_count += _count_solutions(values, limit)
+            solution_count += _count_solutions(values, limit - solution_count,)
 
             values[row][column] = 0
 
