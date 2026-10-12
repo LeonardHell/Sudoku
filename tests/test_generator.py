@@ -1,12 +1,25 @@
 import pytest
+import random
 
 from sudoku_toolkit.validator import is_valid
 from sudoku_toolkit.solver import count_solutions
+from sudoku_toolkit import generator
 from sudoku_toolkit.generator import (
     generate_solution,
-    generate_puzzle
+    generate_puzzle,
 )
 
+
+@pytest.fixture
+def fixed_random_seed():
+    """Make randomness reproducible without affecting other tests."""
+
+    previous_state = random.getstate()
+    random.seed(42)
+
+    yield
+
+    random.setstate(previous_state)
 
 def test_generate_solution_is_valid():
     """The generated Sudoku is a valid completed board."""
@@ -19,10 +32,10 @@ def test_generate_solution_is_valid():
         assert 0 not in row
         assert sorted(row) == list(range(1, 10))
 
-def test_generate_solution_is_random():
+def test_generate_solution_is_random(fixed_random_seed):
     """
     Generating solutions produces different boards.
-    This test could in theory fail but is incredibly unlikely.
+    This test could fail, if seed is not fixed.
     """
 
     board_1 = generate_solution()
@@ -131,11 +144,15 @@ def test_generate_puzzle_rejects_invalid_max_attempts():
     with pytest.raises(ValueError):
         generate_puzzle(max_attempts=0)
 
-def test_generate_puzzle_raises_runtime_error():
-    """
-    For a 17-clue Sudoku 1 attempt is highly unlikely to be enugh for generation and should therefore raise a runtime error.
-    This test could theoretically fail.
-    """
 
-    with pytest.raises(RuntimeError):
-            generate_puzzle(clues=17, max_attempts=1)
+def test_generate_puzzle_raises_runtime_error(monkeypatch):
+    """Raise RuntimeError when no attempt reaches the clue count."""
+
+    monkeypatch.setattr(
+        generator,
+        "count_solutions",
+        lambda board, limit=2: 2,
+    )
+
+    with pytest.raises(RuntimeError, match="after 2 attempts"):
+        generator.generate_puzzle(clues=80, max_attempts=2)
