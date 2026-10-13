@@ -46,16 +46,18 @@ def main():
         help="Generate a Sudoku puzzle."
     )
 
-    puzzle_parser.add_argument(
+    puzzle_options = puzzle_parser.add_mutually_exclusive_group()
+
+    puzzle_options.add_argument(
         "--difficulty",
         choices=["easy", "medium", "hard"],
-        help="Difficulty level."
+        help="Difficulty level.",
     )
 
-    puzzle_parser.add_argument(
+    puzzle_options.add_argument(
         "--clues",
         type=int,
-        help="Number of clues to keep."
+        help="Number of clues to keep.",
     )
 
     puzzle_parser.add_argument(

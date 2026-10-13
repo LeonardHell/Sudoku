@@ -409,3 +409,40 @@ def test_cli_entry_point_without_command(monkeypatch, capsys):
     assert "usage:" in captured.out.lower()
     assert "generate" in captured.out
     assert "solve" in captured.out
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        ["--clues", "40", "--difficulty", "hard"],
+        ["--difficulty", "hard", "--clues", "40"],
+    ],
+)
+def test_puzzle_rejects_clues_and_difficulty(
+    monkeypatch, capsys, options
+):
+    """Reject conflicting options before generating a puzzle."""
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["sudoku", "puzzle", *options],
+    )
+
+    def unexpected_generation(*args, **kwargs):
+        pytest.fail("Generation must not run with conflicting options.")
+
+    monkeypatch.setattr(
+        cli,
+        "generate_puzzle",
+        unexpected_generation,
+    )
+
+    with pytest.raises(SystemExit) as error:
+        cli.main()
+
+    assert error.value.code == 2
+
+    captured = capsys.readouterr()
+    assert "not allowed with argument" in captured.err
+    assert "--clues" in captured.err
+    assert "--difficulty" in captured.err
