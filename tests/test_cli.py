@@ -417,9 +417,8 @@ def test_cli_entry_point_without_command(monkeypatch, capsys):
         ["--difficulty", "hard", "--clues", "40"],
     ],
 )
-def test_puzzle_rejects_clues_and_difficulty(
-    monkeypatch, capsys, options
-):
+
+def test_puzzle_rejects_clues_and_difficulty(monkeypatch, capsys, options):
     """Reject conflicting options before generating a puzzle."""
 
     monkeypatch.setattr(
@@ -446,3 +445,46 @@ def test_puzzle_rejects_clues_and_difficulty(
     assert "not allowed with argument" in captured.err
     assert "--clues" in captured.err
     assert "--difficulty" in captured.err
+
+def test_save_reports_missing_directory_without_traceback(tmp_path, capsys):
+    """A missing output directory produces a readable CLI error."""
+
+    filename = tmp_path / "missing_directory" / "solution.txt"
+    parser = argparse.ArgumentParser()
+
+    with pytest.raises(SystemExit) as error:
+        cli._save_board(VALID_BOARD, filename, parser)
+
+    assert error.value.code == 2
+
+    captured = capsys.readouterr()
+    assert "error:" in captured.err
+    assert repr(str(filename)) in captured.err
+    assert "Traceback" not in captured.err
+
+def test_puzzle_generation_failure_is_reported(monkeypatch, capsys):
+    """Exhausted generation attempts produce a readable CLI error."""
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["sudoku", "puzzle"],
+    )
+
+    def failed_generation(*args, **kwargs):
+        raise RuntimeError("Could not generate a Sudoku.")
+
+    monkeypatch.setattr(
+        cli,
+        "generate_puzzle",
+        failed_generation,
+    )
+
+    with pytest.raises(SystemExit) as error:
+        cli.main()
+
+    assert error.value.code == 2
+
+    captured = capsys.readouterr()
+    assert "Could not generate a Sudoku." in captured.err
+    assert "Traceback" not in captured.err

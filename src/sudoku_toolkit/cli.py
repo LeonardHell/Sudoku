@@ -16,11 +16,11 @@ def _load_board(filename, parser):
 
 
 def _save_board(board, filename, parser):
-    """Save a Sudoku board and report errors through argparse."""
+    """Save a board and report expected errors without a traceback."""
 
     try:
         save_board(board, filename)
-    except ValueError as error:
+    except (ValueError, OSError) as error:
         parser.error(str(error))
 
 
@@ -108,7 +108,7 @@ def main():
                 board = generate_puzzle(
                     difficulty=args.difficulty
                 )
-        except ValueError as error:
+        except (ValueError, RuntimeError) as error:
             parser.error(str(error))
 
         if args.output:
