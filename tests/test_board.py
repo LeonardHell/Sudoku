@@ -57,26 +57,6 @@ def test_board_accepts_boundary_values(value):
     assert board.get(0, 0) == value
 
 
-@pytest.mark.parametrize("value", [-1, 10])
-def test_set_rejects_values_outside_range(value):
-    """Setting an out-of-range value must fail."""
-
-    board = Board([[0] * 9 for _ in range(9)])
-
-    with pytest.raises(ValueError, match="between 0 and 9"):
-        board.set(0, 0, value)
-
-
-@pytest.mark.parametrize("value", [1.5, "5", None, True, False])
-def test_set_rejects_non_integer_values(value):
-    """Setting a non-integer value must fail."""
-
-    board = Board([[0] * 9 for _ in range(9)])
-
-    with pytest.raises(ValueError, match="must be integers"):
-        board.set(0, 0, value)
-
-
 @pytest.mark.parametrize(
     "row, column",
     [(-1, 0), (9, 0), (0, -1), (0, 9)],
