@@ -82,6 +82,17 @@ def test_set_rejects_indices_outside_board(row, column):
         board.set(row, column, 5)
 
 
+def test_set_rejects_non_integer_values():
+    """Given a board and a non-integer cell value,
+    When the cell is updated,
+    Then a ValueError is raised."""
+
+    board = Board([[0] * 9 for _ in range(9)])
+
+    with pytest.raises(ValueError, match="must be integers"):
+        board.set(0, 0, "5")
+
+
 def test_rejected_set_does_not_change_board():
     """Given a cell with an existing value,
     When an invalid update is rejected,
