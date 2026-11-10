@@ -25,6 +25,10 @@ VALID_BOARD = Board(VALID_VALUES)
 
 
 def test_generate_command(monkeypatch, capsys):
+    """Given the generate command with no output path,
+    When the CLI runs,
+    Then the generated Sudoku is printed."""
+
     monkeypatch.setattr(
         sys,
         "argv",
@@ -45,6 +49,10 @@ def test_generate_command(monkeypatch, capsys):
 
 
 def test_generate_with_output(monkeypatch, tmp_path):
+    """Given the generate command with an output path,
+    When the CLI runs,
+    Then the generated Sudoku is saved to that path."""
+
     output_file = tmp_path / "solution.txt"
 
     monkeypatch.setattr(
@@ -78,6 +86,10 @@ def test_generate_with_output(monkeypatch, tmp_path):
 
 
 def test_puzzle_command(monkeypatch, capsys):
+    """Given the puzzle command with default options,
+    When the CLI runs,
+    Then the generated puzzle is printed."""
+
     monkeypatch.setattr(
         sys,
         "argv",
@@ -98,6 +110,10 @@ def test_puzzle_command(monkeypatch, capsys):
 
 
 def test_puzzle_with_difficulty(monkeypatch, capsys):
+    """Given the puzzle command with a difficulty option,
+    When the CLI runs,
+    Then the requested difficulty is used and the puzzle is printed."""
+
     monkeypatch.setattr(
         sys,
         "argv",
@@ -122,6 +138,10 @@ def test_puzzle_with_difficulty(monkeypatch, capsys):
 
 
 def test_puzzle_with_clues(monkeypatch, capsys):
+    """Given the puzzle command with a clue-count option,
+    When the CLI runs,
+    Then the requested clue count is used and the puzzle is printed."""
+
     monkeypatch.setattr(
         sys,
         "argv",
@@ -146,6 +166,10 @@ def test_puzzle_with_clues(monkeypatch, capsys):
 
 
 def test_puzzle_with_output(monkeypatch, tmp_path):
+    """Given the puzzle command with an output path,
+    When the CLI runs,
+    Then the generated puzzle is saved to that path."""
+
     output_file = tmp_path / "puzzle.txt"
 
     monkeypatch.setattr(
@@ -179,6 +203,10 @@ def test_puzzle_with_output(monkeypatch, tmp_path):
 
 
 def test_solve_command(monkeypatch, capsys):
+    """Given the solve command with a solvable input file,
+    When the CLI runs,
+    Then the solved Sudoku is printed."""
+
     monkeypatch.setattr(
         sys,
         "argv",
@@ -205,6 +233,10 @@ def test_solve_command(monkeypatch, capsys):
 
 
 def test_solve_unsolvable(monkeypatch, capsys):
+    """Given the solve command with an unsolvable input file,
+    When the CLI runs,
+    Then a no-solution message is printed."""
+
     monkeypatch.setattr(
         sys,
         "argv",
@@ -231,6 +263,10 @@ def test_solve_unsolvable(monkeypatch, capsys):
 
 
 def test_solve_with_output(monkeypatch, tmp_path):
+    """Given the solve command with an output path,
+    When the CLI runs,
+    Then the solved Sudoku is saved to that path."""
+
     output_file = tmp_path / "solution.txt"
 
     monkeypatch.setattr(
@@ -276,6 +312,10 @@ def test_solve_with_output(monkeypatch, tmp_path):
 
 
 def test_validate_valid(monkeypatch, capsys):
+    """Given the validate command with a valid Sudoku file,
+    When the CLI runs,
+    Then a valid-status message is printed."""
+
     monkeypatch.setattr(
         sys,
         "argv",
@@ -302,6 +342,10 @@ def test_validate_valid(monkeypatch, capsys):
 
 
 def test_validate_invalid(monkeypatch, capsys):
+    """Given the validate command with an invalid Sudoku file,
+    When the CLI runs,
+    Then an invalid-status message is printed."""
+
     monkeypatch.setattr(
         sys,
         "argv",
@@ -328,6 +372,10 @@ def test_validate_invalid(monkeypatch, capsys):
 
 
 def test_no_command(monkeypatch, capsys):
+    """Given the CLI is invoked without a command,
+    When the CLI runs,
+    Then usage information and available commands are displayed."""
+
     monkeypatch.setattr(
         sys,
         "argv",
@@ -346,6 +394,10 @@ def test_no_command(monkeypatch, capsys):
 
 
 def test_save_board_error(monkeypatch):
+    """Given a save operation that raises a ValueError,
+    When the CLI saves the board,
+    Then the CLI exits with an error."""
+
     parser = cli.argparse.ArgumentParser()
 
     def fake_save_board(board, filename):
@@ -365,7 +417,9 @@ def test_save_board_error(monkeypatch):
         )
 
 def test_load_board_unsupported_format(tmp_path, capsys):
-    """Unsupported file formats are reported through the CLI."""
+    """Given an input file with an unsupported format,
+    When the CLI loads the board,
+    Then it exits with an error listing supported formats."""
 
     filename = tmp_path / "puzzle.xlsx"
     parser = argparse.ArgumentParser()
@@ -380,7 +434,9 @@ def test_load_board_unsupported_format(tmp_path, capsys):
     assert "Supported formats are: .txt, .csv" in captured.err
 
 def test_puzzle_generation_error(monkeypatch, capsys):
-    """The CLI reports invalid clue counts."""
+    """Given the puzzle command with an invalid clue count,
+    When the CLI runs,
+    Then it exits with an error describing the allowed range."""
 
     monkeypatch.setattr(
         "sys.argv",
@@ -396,7 +452,9 @@ def test_puzzle_generation_error(monkeypatch, capsys):
     assert "clues must be between 17 and 81" in captured.err
 
 def test_cli_entry_point_without_command(monkeypatch, capsys):
-    """The module entry point displays help without a command."""
+    """Given the module entry point is invoked without a command,
+    When the module runs,
+    Then usage information and commands are displayed."""
 
     monkeypatch.setattr(sys, "argv", ["sudoku-toolkit"])
     monkeypatch.delitem(
@@ -419,7 +477,9 @@ def test_cli_entry_point_without_command(monkeypatch, capsys):
 )
 
 def test_puzzle_rejects_clues_and_difficulty(monkeypatch, capsys, options):
-    """Reject conflicting options before generating a puzzle."""
+    """Given the puzzle command with both clues and difficulty options,
+    When the CLI runs,
+    Then it exits with an error without generating a puzzle."""
 
     monkeypatch.setattr(
         sys,
@@ -447,7 +507,9 @@ def test_puzzle_rejects_clues_and_difficulty(monkeypatch, capsys, options):
     assert "--difficulty" in captured.err
 
 def test_save_reports_missing_directory_without_traceback(tmp_path, capsys):
-    """A missing output directory produces a readable CLI error."""
+    """Given an output path whose directory does not exist,
+    When the CLI saves the board,
+    Then it exits with a readable error and no traceback."""
 
     filename = tmp_path / "missing_directory" / "solution.txt"
     parser = argparse.ArgumentParser()
@@ -463,7 +525,9 @@ def test_save_reports_missing_directory_without_traceback(tmp_path, capsys):
     assert "Traceback" not in captured.err
 
 def test_puzzle_generation_failure_is_reported(monkeypatch, capsys):
-    """Exhausted generation attempts produce a readable CLI error."""
+    """Given puzzle generation that raises a RuntimeError,
+    When the CLI runs,
+    Then it exits with a readable error and no traceback."""
 
     monkeypatch.setattr(
         sys,

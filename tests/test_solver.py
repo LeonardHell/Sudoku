@@ -9,7 +9,9 @@ from sudoku_toolkit.solver import (
 )
 
 def test_solver_solves_sudoku():
-    """Check that the solver produces a complete valid solution."""
+    """Given a solvable Sudoku puzzle,
+    When the puzzle is solved,
+    Then a complete valid solution is returned."""
 
     values = [
         [5, 3, 0, 0, 7, 0, 0, 0, 0],
@@ -31,7 +33,9 @@ def test_solver_solves_sudoku():
 
 
 def test_solver_preserves_given_values():
-    """Check that the solver does not change the given numbers."""
+    """Given a solvable Sudoku puzzle with prefilled values,
+    When the puzzle is solved,
+    Then all prefilled values are preserved."""
 
     values = [
         [5, 3, 0, 0, 7, 0, 0, 0, 0],
@@ -55,7 +59,9 @@ def test_solver_preserves_given_values():
 
 
 def test_solver_returns_none_for_unsolvable_sudoku():
-    """Check that an inconsistent Sudoku is reported as unsolvable."""
+    """Given an inconsistent Sudoku puzzle,
+    When the puzzle is solved,
+    Then no solution is returned."""
 
     values = [
         [5, 5, 0, 0, 7, 0, 0, 0, 0],
@@ -74,7 +80,9 @@ def test_solver_returns_none_for_unsolvable_sudoku():
     assert solve(board) is None
 
 def test_solver_does_not_modify_original_board():
-    """Check that solving does not modify the input board."""
+    """Given a Sudoku puzzle,
+    When the puzzle is solved,
+    Then the original board remains unchanged."""
 
     values = [
         [5, 3, 0, 0, 7, 0, 0, 0, 0],
@@ -96,7 +104,9 @@ def test_solver_does_not_modify_original_board():
     assert board.values == original_values
 
 def test_solver_accepts_solved_board():
-    """Check that an already solved Sudoku is accepted."""
+    """Given an already solved Sudoku,
+    When the puzzle is solved,
+    Then the same solved board is returned."""
 
     values = [
         [5, 3, 4, 6, 7, 8, 9, 1, 2],
@@ -117,7 +127,9 @@ def test_solver_accepts_solved_board():
     assert solved_board.values == values
 
 def test_solve_returns_none_for_unsolvable_board():
-    """An internally valid but unsolvable Sudoku returns None."""
+    """Given a valid but unsolvable Sudoku puzzle,
+    When the puzzle is solved,
+    Then no solution is returned."""
 
     board = Board([
         [6, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -135,7 +147,9 @@ def test_solve_returns_none_for_unsolvable_board():
     assert solve(board) is None
 
 def test_is_valid_move_rejects_column_conflict():
-    """A number already present in the column cannot be placed."""
+    """Given a candidate value already present in the column,
+    When the move is checked,
+    Then the move is rejected."""
 
     values = [
         [5, 3, 0, 0, 7, 0, 0, 0, 0],
@@ -152,7 +166,9 @@ def test_is_valid_move_rejects_column_conflict():
     assert not _is_valid_move(values, 0, 2, 8)
 
 def test_is_valid_move_rejects_row_conflict():
-    """A number already present in the column cannot be placed."""
+    """Given a candidate value already present in the row,
+    When the move is checked,
+    Then the move is rejected."""
 
     values = [
         [5, 3, 0, 0, 7, 0, 0, 0, 0],
@@ -169,7 +185,9 @@ def test_is_valid_move_rejects_row_conflict():
     assert not _is_valid_move(values, 0, 2, 7)
 
 def test_is_valid_move_rejects_block_conflict():
-    """A number already present in the column cannot be placed."""
+    """Given a candidate value already present in the block,
+    When the move is checked,
+    Then the move is rejected."""
 
     values = [
         [5, 3, 0, 0, 7, 0, 0, 0, 0],
@@ -186,6 +204,10 @@ def test_is_valid_move_rejects_block_conflict():
     assert not _is_valid_move(values, 0, 2, 6)
 
 def test_get_possible_values():
+    """Given a Sudoku board and an empty cell with one valid candidate,
+    When possible values are retrieved for the cell,
+    Then only that candidate is returned."""
+
     values = [
         [5, 3, 0, 0, 7, 0, 0, 0, 0],
         [6, 0, 0, 1, 9, 5, 0, 0, 0],
@@ -201,6 +223,10 @@ def test_get_possible_values():
     assert _get_possible_values(values, 4, 4) == [5]
 
 def test_find_empty_position_uses_mrv():
+    """Given a Sudoku board with empty cells,
+    When an empty position is selected,
+    Then a position with the fewest possible values is returned."""
+
     values = [
         [5, 3, 0, 0, 7, 0, 0, 0, 0],
         [6, 0, 0, 1, 9, 5, 0, 0, 0],
@@ -218,7 +244,9 @@ def test_find_empty_position_uses_mrv():
     assert position in [(4, 4), (6, 5), (6, 8), (7, 7)]
 
 def test_count_solutions_no_solution():
-    """An invalid Sudoku has no solutions."""
+    """Given an invalid Sudoku board,
+    When its solutions are counted,
+    Then the count is zero."""
 
     board = Board([
         [5, 3, 5, 0, 7, 0, 0, 0, 0],
@@ -236,7 +264,9 @@ def test_count_solutions_no_solution():
 
 
 def test_count_solutions_one_solution():
-    """A Sudoku with a unique solution has exactly one solution."""
+    """Given a Sudoku board with one solution,
+    When its solutions are counted,
+    Then the count is one."""
 
     board = Board([
         [5, 3, 0, 0, 7, 0, 0, 0, 0],
@@ -253,7 +283,9 @@ def test_count_solutions_one_solution():
     assert count_solutions(board) == 1
 
 def test_count_solutions_multiple_solutions():
-    """An empty Sudoku has multiple solutions."""
+    """Given Sudoku boards with multiple solutions,
+    When their solutions are counted up to the limit,
+    Then the limit is returned for each board."""
 
     board_empty = Board([
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -267,7 +299,6 @@ def test_count_solutions_multiple_solutions():
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
     ])
 
-    """Board with multiple solutions."""
     board_scarse = Board([
         [5, 0, 0, 0, 0, 0, 6, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -284,7 +315,9 @@ def test_count_solutions_multiple_solutions():
     assert count_solutions(board_scarse, limit=2) == 2
 
 def test_count_solutions_does_not_exceed_limit():
-    """Stop at the limit even when multiple branches contain solutions."""
+    """Given a Sudoku with more solutions than the counting limit,
+    When its solutions are counted,
+    Then the count does not exceed the limit."""
 
     board = Board([
         [0, 0, 0, 0, 5, 0, 0, 0, 3],
@@ -301,7 +334,9 @@ def test_count_solutions_does_not_exceed_limit():
     assert count_solutions(board, limit=2) == 2
 
 def test_count_solution_returns_0():
-    """Return 0 if 0 is the limit."""
+    """Given a Sudoku and a solution-count limit of zero,
+    When its solutions are counted,
+    Then the count is zero."""
 
     board = Board([
         [0, 0, 0, 0, 5, 0, 0, 0, 3],

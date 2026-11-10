@@ -26,12 +26,20 @@ VALID_VALUES = [
 
 
 def test_create_board():
+    """Given valid Sudoku values,
+    When a board is created from them,
+    Then a Board containing those values is returned."""
+
     board = _create_board(VALID_VALUES)
 
     assert isinstance(board, Board)
     assert board.values == VALID_VALUES
 
 def test_load_txt(tmp_path):
+    """Given a text file containing a Sudoku,
+    When the file is loaded,
+    Then the board values match the file."""
+
     filename = tmp_path / "puzzle.txt"
 
     filename.write_text(
@@ -53,6 +61,10 @@ def test_load_txt(tmp_path):
 
 
 def test_load_txt_ignores_empty_lines(tmp_path):
+    """Given a text file containing a Sudoku and empty lines,
+    When the file is loaded,
+    Then the empty lines are ignored."""
+
     filename = tmp_path / "puzzle.txt"
 
     filename.write_text(
@@ -76,6 +88,10 @@ def test_load_txt_ignores_empty_lines(tmp_path):
 
 
 def test_load_txt_non_numeric(tmp_path):
+    """Given a text file containing a non-numeric cell,
+    When the file is loaded,
+    Then a ValueError is raised."""
+
     filename = tmp_path / "puzzle.txt"
 
     filename.write_text(
@@ -91,6 +107,10 @@ def test_load_txt_non_numeric(tmp_path):
 
 
 def test_load_txt_file_not_found(tmp_path):
+    """Given a path to a missing text file,
+    When the file is loaded,
+    Then a ValueError is raised."""
+
     filename = tmp_path / "missing.txt"
 
     with pytest.raises(
@@ -101,6 +121,10 @@ def test_load_txt_file_not_found(tmp_path):
 
 
 def test_load_csv(tmp_path):
+    """Given a CSV file containing a Sudoku,
+    When the file is loaded,
+    Then the board values match the file."""
+
     filename = tmp_path / "puzzle.csv"
 
     filename.write_text(
@@ -122,6 +146,10 @@ def test_load_csv(tmp_path):
 
 
 def test_load_csv_non_numeric(tmp_path):
+    """Given a CSV file containing a non-numeric cell,
+    When the file is loaded,
+    Then a ValueError is raised."""
+
     filename = tmp_path / "puzzle.csv"
 
     filename.write_text(
@@ -137,6 +165,10 @@ def test_load_csv_non_numeric(tmp_path):
 
 
 def test_load_board_txt(tmp_path):
+    """Given a text file containing a Sudoku,
+    When the board is loaded by file format,
+    Then the board values match the file."""
+
     filename = tmp_path / "puzzle.txt"
 
     filename.write_text(
@@ -153,6 +185,10 @@ def test_load_board_txt(tmp_path):
 
 
 def test_load_board_csv(tmp_path):
+    """Given a CSV file containing a Sudoku,
+    When the board is loaded by file format,
+    Then the board values match the file."""
+
     filename = tmp_path / "puzzle.csv"
 
     filename.write_text(
@@ -169,6 +205,10 @@ def test_load_board_csv(tmp_path):
 
 
 def test_load_board_unsupported_format(tmp_path):
+    """Given a file with an unsupported extension,
+    When the board is loaded,
+    Then a ValueError is raised."""
+
     filename = tmp_path / "puzzle.json"
     filename.write_text("test", encoding="utf-8")
 
@@ -180,6 +220,10 @@ def test_load_board_unsupported_format(tmp_path):
 
 
 def test_save_txt(tmp_path):
+    """Given a Sudoku board and a text file path,
+    When the board is saved and reloaded,
+    Then the original board values are preserved."""
+
     filename = tmp_path / "puzzle.txt"
     board = Board(VALID_VALUES)
 
@@ -191,6 +235,10 @@ def test_save_txt(tmp_path):
 
 
 def test_save_csv(tmp_path):
+    """Given a Sudoku board and a CSV file path,
+    When the board is saved and reloaded,
+    Then the original board values are preserved."""
+
     filename = tmp_path / "puzzle.csv"
     board = Board(VALID_VALUES)
 
@@ -202,6 +250,10 @@ def test_save_csv(tmp_path):
 
 
 def test_save_board_txt(tmp_path):
+    """Given a Sudoku board and a text file path,
+    When the board is saved by file format and reloaded,
+    Then the original board values are preserved."""
+
     filename = tmp_path / "puzzle.txt"
     board = Board(VALID_VALUES)
 
@@ -211,6 +263,10 @@ def test_save_board_txt(tmp_path):
 
 
 def test_save_board_csv(tmp_path):
+    """Given a Sudoku board and a CSV file path,
+    When the board is saved by file format and reloaded,
+    Then the original board values are preserved."""
+
     filename = tmp_path / "puzzle.csv"
     board = Board(VALID_VALUES)
 
@@ -220,6 +276,10 @@ def test_save_board_csv(tmp_path):
 
 
 def test_save_board_unsupported_format(tmp_path):
+    """Given a Sudoku board and a file path with an unsupported extension,
+    When the board is saved,
+    Then a ValueError is raised."""
+
     filename = tmp_path / "puzzle.json"
     board = Board(VALID_VALUES)
 
@@ -230,7 +290,9 @@ def test_save_board_unsupported_format(tmp_path):
         save_board(board, filename)
 
 def test_load_csv_skips_empty_rows(tmp_path):
-    """Empty rows in a CSV file are skipped."""
+    """Given a CSV file containing an empty row,
+    When the file is loaded,
+    Then the empty row is skipped."""
 
     filename = tmp_path / "puzzle.csv"
 
@@ -257,7 +319,9 @@ def test_load_csv_skips_empty_rows(tmp_path):
     assert board.values[0] == [5, 3, 0, 0, 7, 0, 0, 0, 0]
 
 def test_load_csv_file_not_found(tmp_path):
-    """A missing CSV file raises a ValueError."""
+    """Given a path to a missing CSV file,
+    When the file is loaded,
+    Then a ValueError is raised."""
 
     filename = tmp_path / "missing.csv"
 

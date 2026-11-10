@@ -4,7 +4,9 @@ from sudoku_toolkit import Board
 
 @pytest.mark.parametrize("row_count", [8, 10])
 def test_board_rejects_wrong_number_of_rows(row_count):
-    """A board must have exactly nine rows."""
+    """Given a board with the wrong number of rows,
+    When the board is created,
+    Then a ValueError is raised."""
 
     values = [[0] * 9 for _ in range(row_count)]
 
@@ -14,7 +16,9 @@ def test_board_rejects_wrong_number_of_rows(row_count):
 
 @pytest.mark.parametrize("column_count", [8, 10])
 def test_board_rejects_wrong_number_of_columns(column_count):
-    """Every row must have exactly nine cells."""
+    """Given a board with a row of the wrong length,
+    When the board is created,
+    Then a ValueError is raised."""
 
     values = [[0] * 9 for _ in range(9)]
     values[4] = [0] * column_count
@@ -25,7 +29,9 @@ def test_board_rejects_wrong_number_of_columns(column_count):
 
 @pytest.mark.parametrize("value", [-1, 10])
 def test_board_rejects_values_outside_range(value):
-    """Cell values must be between zero and nine."""
+    """Given a cell value outside the allowed range,
+    When the board is created,
+    Then a ValueError is raised."""
 
     values = [[0] * 9 for _ in range(9)]
     values[0][0] = value
@@ -36,7 +42,9 @@ def test_board_rejects_values_outside_range(value):
 
 @pytest.mark.parametrize("value", [1.5, "5", None, True, False])
 def test_board_rejects_non_integer_values(value):
-    """Only integers are accepted, excluding booleans."""
+    """Given a non-integer cell value,
+    When the board is created,
+    Then a ValueError is raised."""
 
     values = [[0] * 9 for _ in range(9)]
     values[0][0] = value
@@ -47,7 +55,9 @@ def test_board_rejects_non_integer_values(value):
 
 @pytest.mark.parametrize("value", [0, 9])
 def test_board_accepts_boundary_values(value):
-    """Both endpoints of the allowed range are accepted."""
+    """Given a cell value at either allowed endpoint,
+    When the board is created,
+    Then the value is accepted."""
 
     values = [[0] * 9 for _ in range(9)]
     values[0][0] = value
@@ -62,7 +72,9 @@ def test_board_accepts_boundary_values(value):
     [(-1, 0), (9, 0), (0, -1), (0, 9)],
 )
 def test_set_rejects_indices_outside_board(row, column):
-    """Negative indices must not silently access another cell."""
+    """Given an index outside the board,
+    When a cell is updated,
+    Then an IndexError is raised."""
 
     board = Board([[0] * 9 for _ in range(9)])
 
@@ -71,7 +83,9 @@ def test_set_rejects_indices_outside_board(row, column):
 
 
 def test_rejected_set_does_not_change_board():
-    """A rejected update must preserve the previous cell value."""
+    """Given a cell with an existing value,
+    When an invalid update is rejected,
+    Then the existing value is unchanged."""
 
     board = Board([[0] * 9 for _ in range(9)])
     board.set(0, 0, 5)
@@ -83,7 +97,9 @@ def test_rejected_set_does_not_change_board():
 
 
 def test_board_copies_input_rows():
-    """Changing the original input must not change the board."""
+    """Given a board created from input rows,
+    When the input is changed,
+    Then the board remains unchanged."""
 
     values = [[0] * 9 for _ in range(9)]
     board = Board(values)
@@ -93,6 +109,10 @@ def test_board_copies_input_rows():
     assert board.get(0, 0) == 0
 
 def test_board_can_be_created():
+    """Given valid board values,
+    When a board is created,
+    Then it stores those values."""
+
     values = [[0] * 9 for _ in range(9)]
 
     board = Board(values)
@@ -101,6 +121,10 @@ def test_board_can_be_created():
 
 
 def test_board_value_can_be_read():
+    """Given a board with a populated cell,
+    When that cell is read,
+    Then its value is returned."""
+
     values = [[0] * 9 for _ in range(9)]
     values[2][4] = 7
 
@@ -110,6 +134,10 @@ def test_board_value_can_be_read():
 
 
 def test_board_value_can_be_changed():
+    """Given an empty board,
+    When one cell is updated,
+    Then its new value can be read."""
+
     values = [[0] * 9 for _ in range(9)]
 
     board = Board(values)
@@ -118,6 +146,10 @@ def test_board_value_can_be_changed():
     assert board.get(2, 4) == 7
 
 def test_board_str():
+    """Given a populated board,
+    When it is converted to a string,
+    Then it uses the expected Sudoku layout."""
+
     board = Board([
         [1, 2, 3, 4, 5, 6, 7, 8, 9],
         [4, 5, 6, 7, 8, 9, 1, 2, 3],

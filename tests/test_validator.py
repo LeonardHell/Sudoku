@@ -6,7 +6,9 @@ from sudoku_toolkit.validator import is_valid
 
 @pytest.mark.parametrize("value", [-1, 10, 1.5, "5", None, True])
 def test_validator_rejects_board_with_modified_invalid_value(value):
-    """Direct modification of values must not bypass validation."""
+    """Given a board whose cell was modified to an invalid value,
+    When the board is validated,
+    Then it is rejected."""
 
     board = Board([[0] * 9 for _ in range(9)])
     board.values[0][0] = value
@@ -16,7 +18,9 @@ def test_validator_rejects_board_with_modified_invalid_value(value):
 
 @pytest.mark.parametrize("row_count", [8, 10])
 def test_validator_rejects_board_with_modified_row_count(row_count):
-    """A modified row count must return False instead of crashing."""
+    """Given a board whose row count was modified,
+    When the board is validated,
+    Then it is rejected without raising an error."""
 
     board = Board([[0] * 9 for _ in range(9)])
     board.values = [[0] * 9 for _ in range(row_count)]
@@ -26,7 +30,9 @@ def test_validator_rejects_board_with_modified_row_count(row_count):
 
 @pytest.mark.parametrize("column_count", [8, 10])
 def test_validator_rejects_board_with_modified_column_count(column_count):
-    """A modified row length must return False instead of crashing."""
+    """Given a board whose row length was modified,
+    When the board is validated,
+    Then it is rejected without raising an error."""
 
     board = Board([[0] * 9 for _ in range(9)])
     board.values[4] = [0] * column_count
@@ -35,13 +41,19 @@ def test_validator_rejects_board_with_modified_column_count(column_count):
 
 
 def test_validator_accepts_empty_board():
-    """Empty cells do not violate Sudoku rules."""
+    """Given an empty board,
+    When the board is validated,
+    Then it is accepted."""
 
     board = Board([[0] * 9 for _ in range(9)])
 
     assert is_valid(board) is True
 
 def test_valid_board_is_accepted():
+    """Given a board with no rule violations,
+    When the board is validated,
+    Then it is accepted."""
+
     values = [
         [5, 3, 0, 0, 7, 0, 0, 0, 0],
         [6, 0, 0, 1, 9, 5, 0, 0, 0],
@@ -59,6 +71,10 @@ def test_valid_board_is_accepted():
     assert is_valid(board)
 
 def test_duplicate_in_row_is_rejected():
+    """Given a board with a duplicate value in a row,
+    When the board is validated,
+    Then it is rejected."""
+
     values = [
         [5, 0, 0, 0, 7, 0, 0, 5, 0],
         [6, 0, 0, 1, 9, 5, 0, 0, 0],
@@ -76,6 +92,10 @@ def test_duplicate_in_row_is_rejected():
     assert not is_valid(board)
 
 def test_duplicate_in_column_is_rejected():
+    """Given a board with a duplicate value in a column,
+    When the board is validated,
+    Then it is rejected."""
+
     values = [
         [5, 0, 0, 0, 7, 0, 0, 0, 0],
         [6, 0, 0, 1, 9, 5, 0, 0, 0],
@@ -93,6 +113,10 @@ def test_duplicate_in_column_is_rejected():
     assert not is_valid(board)
 
 def test_duplicate_in_block_is_rejected():
+    """Given a board with a duplicate value in a block,
+    When the board is validated,
+    Then it is rejected."""
+
     values = [
         [5, 0, 6, 0, 7, 0, 0, 0, 0],
         [6, 0, 0, 1, 9, 5, 0, 0, 0],
