@@ -10,7 +10,7 @@ from sudoku_toolkit.generator import (
 )
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def fixed_random_seed():
     """Make randomness reproducible without affecting other tests."""
 
@@ -32,10 +32,9 @@ def test_generate_solution_is_valid():
         assert 0 not in row
         assert sorted(row) == list(range(1, 10))
 
-def test_generate_solution_is_random(fixed_random_seed):
+def test_generate_solution_is_random():
     """
-    Generating solutions produces different boards.
-    This test could fail, if seed is not fixed.
+    Two successive calls with a fixed initial seed should produce different solutions.
     """
 
     board_1 = generate_solution()
