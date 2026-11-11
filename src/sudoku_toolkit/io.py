@@ -1,3 +1,5 @@
+"""Read and write Sudoku boards in whitespace-delimited text and CSV formats."""
+
 import csv
 from collections.abc import Iterable
 from os import PathLike
@@ -7,7 +9,7 @@ from .board import Board
 
 
 def _create_board(rows: Iterable[Iterable[int]]) -> Board:
-    """Create a Board after validating its dimensions and values."""
+    """Construct a board from rows, applying the board's structure checks."""
 
     board = Board(rows)
     board.validate_structure()
@@ -15,7 +17,11 @@ def _create_board(rows: Iterable[Iterable[int]]) -> Board:
 
 
 def load_txt(filename: str | PathLike[str]) -> Board:
-    """Load a Sudoku board from a text file."""
+    """Load a Sudoku board whose rows contain whitespace-separated integers.
+
+    Blank lines are ignored. Missing files and non-numeric cells raise
+    ``ValueError``; malformed dimensions or values are rejected by ``Board``.
+    """
 
     try:
         with open(filename, "r", encoding="utf-8") as file:
@@ -24,6 +30,7 @@ def load_txt(filename: str | PathLike[str]) -> Board:
             for line in file:
                 line = line.strip()
 
+                # Ignore blank or whitespace-only lines rather than treating them as rows.
                 if not line:
                     continue
 
@@ -43,7 +50,11 @@ def load_txt(filename: str | PathLike[str]) -> Board:
 
 
 def load_csv(filename: str | PathLike[str]) -> Board:
-    """Load a Sudoku board from a CSV file."""
+    """Load a Sudoku board whose rows contain comma-separated integers.
+
+    Empty rows are ignored. Missing files and non-numeric cells raise
+    ``ValueError``; malformed dimensions or values are rejected by ``Board``.
+    """
 
     try:
         with open(filename, "r", newline="", encoding="utf-8") as file:
@@ -51,6 +62,7 @@ def load_csv(filename: str | PathLike[str]) -> Board:
             rows = []
 
             for row in reader:
+                # csv.reader represents a completely blank line as an empty row.
                 if not row:
                     continue
 
@@ -69,7 +81,11 @@ def load_csv(filename: str | PathLike[str]) -> Board:
     return _create_board(rows)
 
 def load_board(filename: str | PathLike[str]) -> Board:
-    """Load a Sudoku board from a supported file format."""
+    """Choose a text or CSV loader from the filename's extension.
+
+    The extension is case-insensitive. Unsupported extensions raise
+    ``ValueError``.
+    """
 
     extension = Path(filename).suffix.lower()
 
@@ -85,7 +101,7 @@ def load_board(filename: str | PathLike[str]) -> Board:
     )
 
 def save_txt(board: Board, filename: str | PathLike[str]) -> None:
-    """Save a Sudoku board to a text file."""
+    """Write each board row as space-separated values to a text file."""
 
     with open(filename, "w", encoding="utf-8") as file:
         for row in board.values:
@@ -93,14 +109,18 @@ def save_txt(board: Board, filename: str | PathLike[str]) -> None:
 
 
 def save_csv(board: Board, filename: str | PathLike[str]) -> None:
-    """Save a Sudoku board to a CSV file."""
+    """Write each board row as a CSV record."""
 
     with open(filename, "w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
         writer.writerows(board.values)
 
 def save_board(board: Board, filename: str | PathLike[str]) -> None:
-    """Save a Sudoku board to a supported file format."""
+    """Choose a text or CSV writer from the filename's extension.
+
+    The extension is case-insensitive. Unsupported extensions raise
+    ``ValueError``.
+    """
 
     extension = Path(filename).suffix.lower()
 

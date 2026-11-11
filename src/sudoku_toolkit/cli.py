@@ -1,3 +1,5 @@
+"""Command-line interface for generating, solving, and validating Sudoku."""
+
 import argparse
 
 from .board import Board
@@ -30,6 +32,13 @@ def _save_board(
 
 
 def main() -> None:
+    """Parse a subcommand and run the corresponding Sudoku operation.
+
+    ``generate`` prints or saves a completed grid; ``puzzle`` creates a
+    uniquely solvable puzzle; ``solve`` reads and solves a board; and
+    ``validate`` reports whether a board follows Sudoku rules. Expected input,
+    generation, and output errors are reported through argparse.
+    """
     parser = argparse.ArgumentParser(
         description="Solve, validate, and generate Sudoku puzzles."
     )

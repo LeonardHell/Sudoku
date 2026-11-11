@@ -1,20 +1,28 @@
+"""Validation of Sudoku board structure and row, column, and block rules."""
+
 from collections.abc import Iterable
 
 from .board import Board
 
 
 def _unit_is_valid(values: Iterable[int]) -> bool:
-    """Check whether a row, column, or block contains no duplicates."""
+    """Return whether non-empty values in one Sudoku unit are unique."""
+    # Zero represents an empty cell and may appear multiple times in a unit.
     numbers = [value for value in values if value != 0]
     return len(numbers) == len(set(numbers))
 
 
 def is_valid(board: Board) -> bool:
-    """Check grid structure, value range, and Sudoku rules."""
+    """Check board structure and duplicates in every row, column, and block.
+
+    Empty cells are allowed. A malformed board or a repeated non-zero value
+    makes the board invalid.
+    """
 
     try:
         board.validate_structure()
     except ValueError:
+        # Invalid dimensions or cell values are validation failures, not crashes.
         return False
     
     # Check rows
@@ -23,6 +31,7 @@ def is_valid(board: Board) -> bool:
             return False
 
     # Check columns
+    # Unpacking rows transposes the grid so each resulting tuple is one column.
     for column in zip(*board.values):
         if not _unit_is_valid(column):
             return False

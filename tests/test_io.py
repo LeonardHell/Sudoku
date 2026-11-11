@@ -1,3 +1,5 @@
+"""Tests for reading and writing Sudoku boards in supported file formats."""
+
 import pytest
 
 from sudoku_toolkit.board import Board

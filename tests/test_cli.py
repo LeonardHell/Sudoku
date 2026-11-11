@@ -1,3 +1,5 @@
+"""Tests for CLI commands, argument handling, output, and error reporting."""
+
 import argparse
 import sys
 import runpy
@@ -70,6 +72,7 @@ def test_generate_with_output(monkeypatch, tmp_path):
     saved = {}
 
     def fake_save_board(board, filename):
+        """Record the board and destination passed to the save operation."""
         saved["board"] = board
         saved["filename"] = filename
 
@@ -121,6 +124,7 @@ def test_puzzle_with_difficulty(monkeypatch, capsys):
     )
 
     def fake_generate_puzzle(difficulty=None):
+        """Check the requested difficulty and return the shared test board."""
         assert difficulty == "hard"
         return VALID_BOARD
 
@@ -149,6 +153,7 @@ def test_puzzle_with_clues(monkeypatch, capsys):
     )
 
     def fake_generate_puzzle(clues=None):
+        """Check the requested clue count and return the shared test board."""
         assert clues == 30
         return VALID_BOARD
 
@@ -187,6 +192,7 @@ def test_puzzle_with_output(monkeypatch, tmp_path):
     saved = {}
 
     def fake_save_board(board, filename):
+        """Record the board and destination passed to the save operation."""
         saved["board"] = board
         saved["filename"] = filename
 
@@ -296,6 +302,7 @@ def test_solve_with_output(monkeypatch, tmp_path):
     saved = {}
 
     def fake_save_board(board, filename):
+        """Record the board and destination passed to the save operation."""
         saved["board"] = board
         saved["filename"] = filename
 
@@ -401,6 +408,7 @@ def test_save_board_error(monkeypatch):
     parser = cli.argparse.ArgumentParser()
 
     def fake_save_board(board, filename):
+        """Simulate a save failure for an unsupported file format."""
         raise ValueError("Unsupported file format")
 
     monkeypatch.setattr(
@@ -488,6 +496,7 @@ def test_puzzle_rejects_clues_and_difficulty(monkeypatch, capsys, options):
     )
 
     def unexpected_generation(*args, **kwargs):
+        """Fail if conflicting arguments reach puzzle generation."""
         pytest.fail("Generation must not run with conflicting options.")
 
     monkeypatch.setattr(
@@ -536,6 +545,7 @@ def test_puzzle_generation_failure_is_reported(monkeypatch, capsys):
     )
 
     def failed_generation(*args, **kwargs):
+        """Simulate puzzle generation exhausting its attempts."""
         raise RuntimeError("Could not generate a Sudoku.")
 
     monkeypatch.setattr(

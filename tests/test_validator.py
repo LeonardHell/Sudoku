@@ -1,3 +1,5 @@
+"""Tests for board structure and Sudoku rule validation."""
+
 import pytest
 
 from sudoku_toolkit import Board

@@ -1,3 +1,5 @@
+"""Randomized generation of completed Sudoku grids and unique puzzles."""
+
 import random
 
 from .board import Board
@@ -6,6 +8,7 @@ from .solver import (
     count_solutions
 )
 
+# Default clue counts used by the named puzzle difficulty levels.
 DIFFICULTY_CLUES = {
     "easy": 40,
     "medium": 32,
@@ -13,7 +16,11 @@ DIFFICULTY_CLUES = {
 }
 
 def _generate_solution(values: list[list[int]]) -> bool:
-    """Generate a random completed Sudoku grid."""
+    """Fill an in-place grid using randomized backtracking.
+
+    Candidate digits are shuffled before trying them; failed branches reset
+    the cell to zero. Returns whether a complete solution was found.
+    """
 
     empty_position = _find_empty_position(values)
 
@@ -23,6 +30,7 @@ def _generate_solution(values: list[list[int]]) -> bool:
     row, column = empty_position
 
     numbers = list(range(1, 10))
+    # Shuffling changes the search order, producing varied valid solutions.
     random.shuffle(numbers)
 
     for number in numbers:
@@ -32,6 +40,7 @@ def _generate_solution(values: list[list[int]]) -> bool:
             if _generate_solution(values):
                 return True
 
+            # The recursive branch failed; restore the empty cell for backtracking.
             values[row][column] = 0
 
     return False
@@ -40,7 +49,7 @@ def _generate_solution(values: list[list[int]]) -> bool:
 def _find_empty_position(
     values: list[list[int]],
 ) -> tuple[int, int] | None:
-    """Find the next empty position."""
+    """Return the first empty cell in row-major order, or ``None`` if full."""
 
     for row in range(9):
         for column in range(9):
@@ -51,7 +60,10 @@ def _find_empty_position(
 
 
 def generate_solution() -> Board:
-    """Generate a completely solved Sudoku."""
+    """Create an empty grid, fill it with randomized backtracking, and wrap it.
+
+    The returned board is complete and satisfies the Sudoku constraints.
+    """
 
     values = [[0 for _ in range(9)] for _ in range(9)]
 
@@ -66,17 +78,25 @@ def generate_puzzle(
 ) -> Board:
     """Generate a Sudoku puzzle with a unique solution.
 
+    A completed grid is generated first. Cells are then considered in random
+    order and removed only when the remaining puzzle still has exactly one
+    solution. If a full pass cannot reach the requested clue count, the process
+    retries with a new completed grid until ``max_attempts`` is exhausted.
+
     Args:
-        clues: Number of given numbers that should remain in the puzzle. Default is 35.
-        difficulty: Difficulty level ('easy', 'medium', or 'hard'). Doesn't overwirte number of clues
-        max_attempts: Maximum number of gneration attempts.
-        
+        clues: Number of given digits to retain. Defaults to 35.
+        difficulty: Named level selecting its configured clue count. Cannot be
+            supplied together with ``clues``.
+        max_attempts: Maximum number of completed grids to try.
+
     Returns:
-        A Board containing a Sudoku puzzle with a unique solution.
+        A board with the requested clue count and exactly one solution.
 
     Raises:
-        ValueError: If the difficulty, clues, or max_attempts are invalid.
-        RuntimeError: If no suitable puzzle is found within max_attempts.
+        ValueError: If options conflict or their values are outside supported
+            ranges.
+        RuntimeError: If no puzzle with the requested clue count is generated
+            within ``max_attempts``.
     """
 
     if clues is not None and difficulty is not None:
@@ -112,6 +132,7 @@ def generate_puzzle(
             for column in range(9)
         ]
 
+        # Random removal order gives different puzzles from the same solution.
         random.shuffle(positions)
 
         current_clues = 81
@@ -125,9 +146,11 @@ def generate_puzzle(
 
             puzzle = Board(values)
 
+            # Keep a removal only if it preserves exactly one solution.
             if count_solutions(puzzle, limit=2) == 1:
                 current_clues -= 1
             else:
+                # Restore the clue when removing it makes the puzzle ambiguous.
                 values[row][column] = original_value
         if current_clues == clues:
             return Board(values)

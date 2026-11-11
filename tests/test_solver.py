@@ -1,3 +1,5 @@
+"""Tests for Sudoku solving, move selection, and solution counting."""
+
 from sudoku_toolkit import Board
 from sudoku_toolkit.validator import is_valid
 from sudoku_toolkit.solver import (

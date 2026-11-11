@@ -1,3 +1,5 @@
+"""Tests for randomized solution and unique-puzzle generation."""
+
 import pytest
 import random
 

@@ -1,10 +1,22 @@
+"""Data model and basic operations for a 9x9 Sudoku board."""
+
 from collections.abc import Iterable
 
 
 class Board:
-    """Representation of a 9x9 Sudoku board. Zero denotes an empty cell."""
+    """Representation of a 9x9 Sudoku board.
+
+    The public ``values`` attribute stores nine mutable rows of nine integers.
+    Values range from 1 to 9, and zero denotes an empty cell.
+    """
 
     def __init__(self, values: Iterable[Iterable[int]]) -> None:
+        """Copy and validate the supplied rows and cell values.
+
+        Raises:
+            ValueError: If the input is not a 9x9 grid of integers from 0 to 9.
+        """
+        # Copy each row so later edits to the caller's input cannot change this board.
         self.values = [list(row) for row in values]
         self.validate_structure()
 
@@ -23,6 +35,7 @@ class Board:
 
         for row in self.values:
             for value in row:
+                # bool is an int subclass, but True/False are not Sudoku digits.
                 if type(value) is not int:
                     raise ValueError(
                         "Sudoku values must be integers."
@@ -34,11 +47,16 @@ class Board:
                     )
 
     def get(self, row: int, column: int) -> int:
-        """Return the value at the given position."""
+        """Return the value at the zero-based row and column."""
         return self.values[row][column]
 
     def set(self, row: int, column: int, value: int) -> None:
-        """Set a cell to an integer between 0 and 9."""
+        """Set a cell after checking its value and board coordinates.
+
+        Raises:
+            ValueError: If ``value`` is not an integer from 0 to 9.
+            IndexError: If either coordinate is outside the board.
+        """
 
         if type(value) is not int:
             raise ValueError("Sudoku values must be integers.")
