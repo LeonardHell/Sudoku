@@ -12,7 +12,7 @@ DIFFICULTY_CLUES = {
     "hard": 25,
 }
 
-def _generate_solution(values):
+def _generate_solution(values: list[list[int]]) -> bool:
     """Generate a random completed Sudoku grid."""
 
     empty_position = _find_empty_position(values)
@@ -37,7 +37,9 @@ def _generate_solution(values):
     return False
 
 
-def _find_empty_position(values):
+def _find_empty_position(
+    values: list[list[int]],
+) -> tuple[int, int] | None:
     """Find the next empty position."""
 
     for row in range(9):
@@ -48,7 +50,7 @@ def _find_empty_position(values):
     return None
 
 
-def generate_solution():
+def generate_solution() -> Board:
     """Generate a completely solved Sudoku."""
 
     values = [[0 for _ in range(9)] for _ in range(9)]
@@ -57,7 +59,11 @@ def generate_solution():
 
     return Board(values)
 
-def generate_puzzle(clues=None, difficulty=None, max_attempts=100):
+def generate_puzzle(
+    clues: int | None = None,
+    difficulty: str | None = None,
+    max_attempts: int = 100,
+) -> Board:
     """Generate a Sudoku puzzle with a unique solution.
 
     Args:

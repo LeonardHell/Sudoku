@@ -1,10 +1,15 @@
-def _unit_is_valid(values):
+from collections.abc import Iterable
+
+from .board import Board
+
+
+def _unit_is_valid(values: Iterable[int]) -> bool:
     """Check whether a row, column, or block contains no duplicates."""
     numbers = [value for value in values if value != 0]
     return len(numbers) == len(set(numbers))
 
 
-def is_valid(board):
+def is_valid(board: Board) -> bool:
     """Check grid structure, value range, and Sudoku rules."""
 
     try:

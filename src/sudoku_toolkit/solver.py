@@ -2,7 +2,7 @@ from .board import Board
 from .validator import is_valid
 
 
-def solve(board):
+def solve(board: Board) -> Board | None:
     """Solve a Sudoku board using backtracking.
 
     Return a solved Board if a solution exists.
@@ -19,7 +19,7 @@ def solve(board):
     return None
 
 
-def _solve_values(values):
+def _solve_values(values: list[list[int]]) -> bool:
     """Recursively solve the Sudoku using backtracking."""
 
     empty_position = _find_empty_position(values)
@@ -40,7 +40,11 @@ def _solve_values(values):
 
     return False
 
-def _get_possible_values(values, row, column):
+def _get_possible_values(
+    values: list[list[int]],
+    row: int,
+    column: int,
+) -> list[int]:
     """Return the possible values for a position."""
 
     possible_values = []
@@ -51,7 +55,9 @@ def _get_possible_values(values, row, column):
 
     return possible_values
 
-def _find_empty_position(values):
+def _find_empty_position(
+    values: list[list[int]],
+) -> tuple[int, int] | None:
     """Return the empty position with the fewest possible values."""
 
     best_position = None
@@ -73,7 +79,12 @@ def _find_empty_position(values):
 
     return best_position
 
-def _is_valid_move(values, row, column, number):
+def _is_valid_move(
+    values: list[list[int]],
+    row: int,
+    column: int,
+    number: int,
+) -> bool:
     """Return whether a number can be placed at a given position."""
 
     # Check the row
@@ -96,7 +107,7 @@ def _is_valid_move(values, row, column, number):
 
     return True
 
-def count_solutions(board, limit=2):
+def count_solutions(board: Board, limit: int = 2) -> int:
     """Count the number of solutions of a Sudoku board.
 
     Stop searching once the number of solutions reaches limit.
@@ -109,7 +120,7 @@ def count_solutions(board, limit=2):
     return _count_solutions(values, limit)
 
 
-def _count_solutions(values, limit):
+def _count_solutions(values: list[list[int]], limit: int) -> int:
     """Count solutions, stopping once the specified limit is reached."""
 
     if limit <= 0:

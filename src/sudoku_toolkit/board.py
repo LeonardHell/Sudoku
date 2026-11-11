@@ -1,11 +1,14 @@
+from collections.abc import Iterable
+
+
 class Board:
     """Representation of a 9x9 Sudoku board. Zero denotes an empty cell."""
 
-    def __init__(self, values):
+    def __init__(self, values: Iterable[Iterable[int]]) -> None:
         self.values = [list(row) for row in values]
         self.validate_structure()
 
-    def validate_structure(self):
+    def validate_structure(self) -> None:
         """Reject malformed grids and values outside the allowed range."""
 
         if len(self.values) != 9:
@@ -30,11 +33,11 @@ class Board:
                         "Sudoku values must be between 0 and 9."
                     )
 
-    def get(self, row, column):
+    def get(self, row: int, column: int) -> int:
         """Return the value at the given position."""
         return self.values[row][column]
 
-    def set(self, row, column, value):
+    def set(self, row: int, column: int, value: int) -> None:
         """Set a cell to an integer between 0 and 9."""
 
         if type(value) is not int:
@@ -48,7 +51,7 @@ class Board:
 
         self.values[row][column] = value
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return a formatted string representation of the Sudoku board."""
 
         lines = []

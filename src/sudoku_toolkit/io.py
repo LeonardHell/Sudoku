@@ -1,10 +1,12 @@
 import csv
+from collections.abc import Iterable
+from os import PathLike
 from pathlib import Path
 
 from .board import Board
 
 
-def _create_board(rows):
+def _create_board(rows: Iterable[Iterable[int]]) -> Board:
     """Create a Board after validating its dimensions and values."""
 
     board = Board(rows)
@@ -12,7 +14,7 @@ def _create_board(rows):
     return board
 
 
-def load_txt(filename):
+def load_txt(filename: str | PathLike[str]) -> Board:
     """Load a Sudoku board from a text file."""
 
     try:
@@ -40,7 +42,7 @@ def load_txt(filename):
     return _create_board(rows)
 
 
-def load_csv(filename):
+def load_csv(filename: str | PathLike[str]) -> Board:
     """Load a Sudoku board from a CSV file."""
 
     try:
@@ -66,7 +68,7 @@ def load_csv(filename):
 
     return _create_board(rows)
 
-def load_board(filename):
+def load_board(filename: str | PathLike[str]) -> Board:
     """Load a Sudoku board from a supported file format."""
 
     extension = Path(filename).suffix.lower()
@@ -82,7 +84,7 @@ def load_board(filename):
         "Supported formats are: .txt, .csv"
     )
 
-def save_txt(board, filename):
+def save_txt(board: Board, filename: str | PathLike[str]) -> None:
     """Save a Sudoku board to a text file."""
 
     with open(filename, "w", encoding="utf-8") as file:
@@ -90,14 +92,14 @@ def save_txt(board, filename):
             file.write(" ".join(str(value) for value in row) + "\n")
 
 
-def save_csv(board, filename):
+def save_csv(board: Board, filename: str | PathLike[str]) -> None:
     """Save a Sudoku board to a CSV file."""
 
     with open(filename, "w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
         writer.writerows(board.values)
 
-def save_board(board, filename):
+def save_board(board: Board, filename: str | PathLike[str]) -> None:
     """Save a Sudoku board to a supported file format."""
 
     extension = Path(filename).suffix.lower()

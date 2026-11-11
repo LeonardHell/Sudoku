@@ -1,12 +1,13 @@
 import argparse
 
+from .board import Board
 from .io import load_board, save_board
 from .generator import generate_puzzle, generate_solution
 from .solver import solve
 from .validator import is_valid
 
 
-def _load_board(filename, parser):
+def _load_board(filename: str, parser: argparse.ArgumentParser) -> Board:
     """Load a Sudoku board and report errors through argparse."""
 
     try:
@@ -15,7 +16,11 @@ def _load_board(filename, parser):
         parser.error(str(error))
 
 
-def _save_board(board, filename, parser):
+def _save_board(
+    board: Board,
+    filename: str,
+    parser: argparse.ArgumentParser,
+) -> None:
     """Save a board and report expected errors without a traceback."""
 
     try:
@@ -24,7 +29,7 @@ def _save_board(board, filename, parser):
         parser.error(str(error))
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Solve, validate, and generate Sudoku puzzles."
     )
