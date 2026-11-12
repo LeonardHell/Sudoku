@@ -1,5 +1,7 @@
 """Tests for reading and writing Sudoku boards in supported file formats."""
 
+from pathlib import Path
+
 import pytest
 
 from sudoku_toolkit.board import Board
@@ -14,7 +16,7 @@ from sudoku_toolkit.io import (
 )
 
 
-def test_create_board(valid_puzzle_values):
+def test_create_board(valid_puzzle_values: list[list[int]]) -> None:
     """Given valid Sudoku values,
     When a board is created from them,
     Then a Board containing those values is returned."""
@@ -24,7 +26,7 @@ def test_create_board(valid_puzzle_values):
     assert isinstance(board, Board)
     assert board.values == valid_puzzle_values
 
-def test_load_txt(tmp_path, valid_puzzle_values):
+def test_load_txt(tmp_path: Path, valid_puzzle_values: list[list[int]]) -> None:
     """Given a text file containing a Sudoku,
     When the file is loaded,
     Then the board values match the file."""
@@ -49,7 +51,9 @@ def test_load_txt(tmp_path, valid_puzzle_values):
     assert board.values == valid_puzzle_values
 
 
-def test_load_txt_ignores_empty_lines(tmp_path, valid_puzzle_values):
+def test_load_txt_ignores_empty_lines(
+    tmp_path: Path, valid_puzzle_values: list[list[int]]
+) -> None:
     """Given a text file containing a Sudoku and empty lines,
     When the file is loaded,
     Then the empty lines are ignored."""
@@ -76,7 +80,7 @@ def test_load_txt_ignores_empty_lines(tmp_path, valid_puzzle_values):
     assert board.values == valid_puzzle_values
 
 
-def test_load_txt_non_numeric(tmp_path):
+def test_load_txt_non_numeric(tmp_path: Path) -> None:
     """Given a text file containing a non-numeric cell,
     When the file is loaded,
     Then a ValueError is raised."""
@@ -95,7 +99,7 @@ def test_load_txt_non_numeric(tmp_path):
         load_txt(filename)
 
 
-def test_load_txt_file_not_found(tmp_path):
+def test_load_txt_file_not_found(tmp_path: Path) -> None:
     """Given a path to a missing text file,
     When the file is loaded,
     Then a ValueError is raised."""
@@ -109,7 +113,7 @@ def test_load_txt_file_not_found(tmp_path):
         load_txt(filename)
 
 
-def test_load_csv(tmp_path, valid_puzzle_values):
+def test_load_csv(tmp_path: Path, valid_puzzle_values: list[list[int]]) -> None:
     """Given a CSV file containing a Sudoku,
     When the file is loaded,
     Then the board values match the file."""
@@ -134,7 +138,7 @@ def test_load_csv(tmp_path, valid_puzzle_values):
     assert board.values == valid_puzzle_values
 
 
-def test_load_csv_non_numeric(tmp_path):
+def test_load_csv_non_numeric(tmp_path: Path) -> None:
     """Given a CSV file containing a non-numeric cell,
     When the file is loaded,
     Then a ValueError is raised."""
@@ -153,7 +157,9 @@ def test_load_csv_non_numeric(tmp_path):
         load_csv(filename)
 
 
-def test_load_board_txt(tmp_path, valid_puzzle_values):
+def test_load_board_txt(
+    tmp_path: Path, valid_puzzle_values: list[list[int]]
+) -> None:
     """Given a text file containing a Sudoku,
     When the board is loaded by file format,
     Then the board values match the file."""
@@ -173,7 +179,9 @@ def test_load_board_txt(tmp_path, valid_puzzle_values):
     assert board.values == valid_puzzle_values
 
 
-def test_load_board_csv(tmp_path, valid_puzzle_values):
+def test_load_board_csv(
+    tmp_path: Path, valid_puzzle_values: list[list[int]]
+) -> None:
     """Given a CSV file containing a Sudoku,
     When the board is loaded by file format,
     Then the board values match the file."""
@@ -193,7 +201,7 @@ def test_load_board_csv(tmp_path, valid_puzzle_values):
     assert board.values == valid_puzzle_values
 
 
-def test_load_board_unsupported_format(tmp_path):
+def test_load_board_unsupported_format(tmp_path: Path) -> None:
     """Given a file with an unsupported extension,
     When the board is loaded,
     Then a ValueError is raised."""
@@ -208,7 +216,7 @@ def test_load_board_unsupported_format(tmp_path):
         load_board(filename)
 
 
-def test_save_txt(tmp_path, valid_puzzle_values):
+def test_save_txt(tmp_path: Path, valid_puzzle_values: list[list[int]]) -> None:
     """Given a Sudoku board and a text file path,
     When the board is saved and reloaded,
     Then the original board values are preserved."""
@@ -223,7 +231,7 @@ def test_save_txt(tmp_path, valid_puzzle_values):
     assert loaded_board.values == valid_puzzle_values
 
 
-def test_save_csv(tmp_path, valid_puzzle_values):
+def test_save_csv(tmp_path: Path, valid_puzzle_values: list[list[int]]) -> None:
     """Given a Sudoku board and a CSV file path,
     When the board is saved and reloaded,
     Then the original board values are preserved."""
@@ -238,7 +246,9 @@ def test_save_csv(tmp_path, valid_puzzle_values):
     assert loaded_board.values == valid_puzzle_values
 
 
-def test_save_board_txt(tmp_path, valid_puzzle_values):
+def test_save_board_txt(
+    tmp_path: Path, valid_puzzle_values: list[list[int]]
+) -> None:
     """Given a Sudoku board and a text file path,
     When the board is saved by file format and reloaded,
     Then the original board values are preserved."""
@@ -251,7 +261,9 @@ def test_save_board_txt(tmp_path, valid_puzzle_values):
     assert load_board(filename).values == valid_puzzle_values
 
 
-def test_save_board_csv(tmp_path, valid_puzzle_values):
+def test_save_board_csv(
+    tmp_path: Path, valid_puzzle_values: list[list[int]]
+) -> None:
     """Given a Sudoku board and a CSV file path,
     When the board is saved by file format and reloaded,
     Then the original board values are preserved."""
@@ -264,7 +276,9 @@ def test_save_board_csv(tmp_path, valid_puzzle_values):
     assert load_board(filename).values == valid_puzzle_values
 
 
-def test_save_board_unsupported_format(tmp_path, valid_puzzle_values):
+def test_save_board_unsupported_format(
+    tmp_path: Path, valid_puzzle_values: list[list[int]]
+) -> None:
     """Given a Sudoku board and a file path with an unsupported extension,
     When the board is saved,
     Then a ValueError is raised."""
@@ -278,7 +292,7 @@ def test_save_board_unsupported_format(tmp_path, valid_puzzle_values):
     ):
         save_board(board, filename)
 
-def test_load_csv_skips_empty_rows(tmp_path):
+def test_load_csv_skips_empty_rows(tmp_path: Path) -> None:
     """Given a CSV file containing an empty row,
     When the file is loaded,
     Then the empty row is skipped."""
@@ -307,7 +321,7 @@ def test_load_csv_skips_empty_rows(tmp_path):
     assert len(board.values) == 9
     assert board.values[0] == [5, 3, 0, 0, 7, 0, 0, 0, 0]
 
-def test_load_csv_file_not_found(tmp_path):
+def test_load_csv_file_not_found(tmp_path: Path) -> None:
     """Given a path to a missing CSV file,
     When the file is loaded,
     Then a ValueError is raised."""

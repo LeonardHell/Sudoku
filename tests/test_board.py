@@ -1,11 +1,12 @@
 """Tests for Sudoku board construction, access, mutation, and formatting."""
 
 import pytest
+from typing import Any
 
 from sudoku_toolkit import Board
 
 @pytest.mark.parametrize("row_count", [8, 10])
-def test_board_rejects_wrong_number_of_rows(row_count):
+def test_board_rejects_wrong_number_of_rows(row_count: int) -> None:
     """Given a board with the wrong number of rows,
     When the board is created,
     Then a ValueError is raised."""
@@ -17,7 +18,7 @@ def test_board_rejects_wrong_number_of_rows(row_count):
 
 
 @pytest.mark.parametrize("column_count", [8, 10])
-def test_board_rejects_wrong_number_of_columns(column_count):
+def test_board_rejects_wrong_number_of_columns(column_count: int) -> None:
     """Given a board with a row of the wrong length,
     When the board is created,
     Then a ValueError is raised."""
@@ -30,7 +31,7 @@ def test_board_rejects_wrong_number_of_columns(column_count):
 
 
 @pytest.mark.parametrize("value", [-1, 10])
-def test_board_rejects_values_outside_range(value):
+def test_board_rejects_values_outside_range(value: int) -> None:
     """Given a cell value outside the allowed range,
     When the board is created,
     Then a ValueError is raised."""
@@ -43,7 +44,7 @@ def test_board_rejects_values_outside_range(value):
 
 
 @pytest.mark.parametrize("value", [1.5, "5", None, True, False])
-def test_board_rejects_non_integer_values(value):
+def test_board_rejects_non_integer_values(value: Any) -> None:
     """Given a non-integer cell value,
     When the board is created,
     Then a ValueError is raised."""
@@ -56,7 +57,7 @@ def test_board_rejects_non_integer_values(value):
 
 
 @pytest.mark.parametrize("value", [0, 9])
-def test_board_accepts_boundary_values(value):
+def test_board_accepts_boundary_values(value: int) -> None:
     """Given a cell value at either allowed endpoint,
     When the board is created,
     Then the value is accepted."""
@@ -73,7 +74,9 @@ def test_board_accepts_boundary_values(value):
     "row, column",
     [(-1, 0), (9, 0), (0, -1), (0, 9)],
 )
-def test_set_rejects_indices_outside_board(row, column, empty_board):
+def test_set_rejects_indices_outside_board(
+    row: int, column: int, empty_board: Board
+) -> None:
     """Given an index outside the board,
     When a cell is updated,
     Then an IndexError is raised."""
@@ -82,7 +85,7 @@ def test_set_rejects_indices_outside_board(row, column, empty_board):
         empty_board.set(row, column, 5)
 
 
-def test_set_rejects_non_integer_values(empty_board):
+def test_set_rejects_non_integer_values(empty_board: Board) -> None:
     """Given a board and a non-integer cell value,
     When the cell is updated,
     Then a ValueError is raised."""
@@ -91,7 +94,7 @@ def test_set_rejects_non_integer_values(empty_board):
         empty_board.set(0, 0, "5")
 
 
-def test_rejected_set_does_not_change_board(empty_board):
+def test_rejected_set_does_not_change_board(empty_board: Board) -> None:
     """Given a cell with an existing value,
     When an invalid update is rejected,
     Then the existing value is unchanged."""
@@ -104,7 +107,7 @@ def test_rejected_set_does_not_change_board(empty_board):
     assert empty_board.get(0, 0) == 5
 
 
-def test_board_copies_input_rows():
+def test_board_copies_input_rows() -> None:
     """Given a board created from input rows,
     When the input is changed,
     Then the board remains unchanged."""
@@ -116,7 +119,7 @@ def test_board_copies_input_rows():
 
     assert board.get(0, 0) == 0
 
-def test_board_can_be_created():
+def test_board_can_be_created() -> None:
     """Given valid board values,
     When a board is created,
     Then it stores those values."""
@@ -128,7 +131,7 @@ def test_board_can_be_created():
     assert board.values == values
 
 
-def test_board_value_can_be_read():
+def test_board_value_can_be_read() -> None:
     """Given a board with a populated cell,
     When that cell is read,
     Then its value is returned."""
@@ -141,7 +144,7 @@ def test_board_value_can_be_read():
     assert board.get(2, 4) == 7
 
 
-def test_board_value_can_be_changed(empty_board):
+def test_board_value_can_be_changed(empty_board: Board) -> None:
     """Given an empty board,
     When one cell is updated,
     Then its new value can be read."""
@@ -150,7 +153,7 @@ def test_board_value_can_be_changed(empty_board):
 
     assert empty_board.get(2, 4) == 7
 
-def test_board_str():
+def test_board_str() -> None:
     """Given a populated board,
     When it is converted to a string,
     Then it uses the expected Sudoku layout."""

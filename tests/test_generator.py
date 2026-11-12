@@ -2,6 +2,7 @@
 
 import pytest
 import random
+from collections.abc import Iterator
 
 from sudoku_toolkit.validator import is_valid
 from sudoku_toolkit.solver import count_solutions
@@ -13,7 +14,7 @@ from sudoku_toolkit.generator import (
 
 
 @pytest.fixture(autouse=True)
-def fixed_random_seed():
+def fixed_random_seed() -> Iterator[None]:
     """Make randomness reproducible without affecting other tests."""
 
     previous_state = random.getstate()
@@ -23,7 +24,7 @@ def fixed_random_seed():
 
     random.setstate(previous_state)
 
-def test_generate_solution_is_valid():
+def test_generate_solution_is_valid() -> None:
     """Given a request for a solution,
     When a solution is generated,
     Then it is a valid completed board."""
@@ -36,7 +37,7 @@ def test_generate_solution_is_valid():
         assert 0 not in row
         assert sorted(row) == list(range(1, 10))
 
-def test_generate_solution_is_random():
+def test_generate_solution_is_random() -> None:
     """Given a fixed initial random seed,
     When two solutions are generated successively,
     Then the solutions are different."""
@@ -46,7 +47,7 @@ def test_generate_solution_is_random():
 
     assert board_1.values != board_2.values
 
-def test_generate_puzzle_is_valid():
+def test_generate_puzzle_is_valid() -> None:
     """Given a request for a puzzle with 35 clues,
     When the puzzle is generated,
     Then it is a valid Sudoku board."""
@@ -56,7 +57,7 @@ def test_generate_puzzle_is_valid():
     assert is_valid(board)
 
 
-def test_generate_puzzle_has_correct_number_of_clues():
+def test_generate_puzzle_has_correct_number_of_clues() -> None:
     """Given a request for a puzzle with 36 clues,
     When the puzzle is generated,
     Then it has exactly 36 clues."""
@@ -72,7 +73,7 @@ def test_generate_puzzle_has_correct_number_of_clues():
     assert clues == 36
 
 
-def test_generate_puzzle_has_unique_solution():
+def test_generate_puzzle_has_unique_solution() -> None:
     """Given a request for a puzzle,
     When the puzzle is generated and its solutions are counted,
     Then it has exactly one solution."""
@@ -82,7 +83,7 @@ def test_generate_puzzle_has_unique_solution():
     assert count_solutions(board, limit=2) == 1
 
 
-def test_generate_puzzle_rejects_invalid_clues():
+def test_generate_puzzle_rejects_invalid_clues() -> None:
     """Given clue counts below or above the supported range,
     When a puzzle is generated,
     Then a ValueError is raised."""
@@ -92,7 +93,7 @@ def test_generate_puzzle_rejects_invalid_clues():
     with pytest.raises(ValueError):
         generate_puzzle(clues=82)
 
-def test_generate_easy_puzzle():
+def test_generate_easy_puzzle() -> None:
     """Given a request for an easy puzzle,
     When the puzzle is generated,
     Then it has 40 clues and one solution."""
@@ -109,7 +110,7 @@ def test_generate_easy_puzzle():
     assert count_solutions(board, limit=2) == 1
 
 
-def test_generate_medium_puzzle():
+def test_generate_medium_puzzle() -> None:
     """Given a request for a medium puzzle,
     When the puzzle is generated,
     Then it has 32 clues and one solution."""
@@ -126,7 +127,7 @@ def test_generate_medium_puzzle():
     assert count_solutions(board, limit=2) == 1
 
 
-def test_generate_hard_puzzle():
+def test_generate_hard_puzzle() -> None:
     """Given a request for a hard puzzle,
     When the puzzle is generated,
     Then it has 25 clues and one solution."""
@@ -143,7 +144,7 @@ def test_generate_hard_puzzle():
     assert count_solutions(board, limit=2) == 1
 
 
-def test_generate_puzzle_rejects_invalid_difficulty():
+def test_generate_puzzle_rejects_invalid_difficulty() -> None:
     """Given an unsupported difficulty,
     When a puzzle is generated,
     Then a ValueError is raised."""
@@ -151,7 +152,7 @@ def test_generate_puzzle_rejects_invalid_difficulty():
     with pytest.raises(ValueError):
         generate_puzzle(difficulty="impossible")
 
-def test_generate_puzzle_rejects_clues_and_difficulty():
+def test_generate_puzzle_rejects_clues_and_difficulty() -> None:
     """Given both a clue count and a difficulty,
     When a puzzle is generated,
     Then a ValueError is raised."""
@@ -159,7 +160,7 @@ def test_generate_puzzle_rejects_clues_and_difficulty():
     with pytest.raises(ValueError):
         generate_puzzle(clues=30, difficulty='hard')
 
-def test_generate_puzzle_rejects_invalid_max_attempts():
+def test_generate_puzzle_rejects_invalid_max_attempts() -> None:
     """Given a maximum attempt count below one,
     When a puzzle is generated,
     Then a ValueError is raised."""
@@ -168,7 +169,9 @@ def test_generate_puzzle_rejects_invalid_max_attempts():
         generate_puzzle(max_attempts=0)
 
 
-def test_generate_puzzle_raises_runtime_error(monkeypatch):
+def test_generate_puzzle_raises_runtime_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Given generation attempts that never produce a unique puzzle,
     When the maximum number of attempts is reached,
     Then a RuntimeError is raised."""

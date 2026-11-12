@@ -4,12 +4,17 @@ import argparse
 import sys
 import runpy
 import pytest
+from pathlib import Path
 
-from sudoku_toolkit import cli
+from sudoku_toolkit import Board, cli
 from sudoku_toolkit.solver import is_valid
 
 
-def test_generate_command(monkeypatch, capsys, valid_puzzle_board):
+def test_generate_command(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    valid_puzzle_board: Board,
+) -> None:
     """Given the generate command with no output path,
     When the CLI runs,
     Then the generated Sudoku is printed."""
@@ -33,7 +38,11 @@ def test_generate_command(monkeypatch, capsys, valid_puzzle_board):
     assert captured.out == str(valid_puzzle_board) + "\n"
 
 
-def test_generate_with_output(monkeypatch, tmp_path, valid_puzzle_board):
+def test_generate_with_output(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    valid_puzzle_board: Board,
+) -> None:
     """Given the generate command with an output path,
     When the CLI runs,
     Then the generated Sudoku is saved to that path."""
@@ -71,7 +80,11 @@ def test_generate_with_output(monkeypatch, tmp_path, valid_puzzle_board):
     assert saved["filename"] == str(output_file)
 
 
-def test_puzzle_command(monkeypatch, capsys, valid_puzzle_board):
+def test_puzzle_command(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    valid_puzzle_board: Board,
+) -> None:
     """Given the puzzle command with default options,
     When the CLI runs,
     Then the generated puzzle is printed."""
@@ -95,7 +108,11 @@ def test_puzzle_command(monkeypatch, capsys, valid_puzzle_board):
     assert captured.out == str(valid_puzzle_board) + "\n"
 
 
-def test_puzzle_with_difficulty(monkeypatch, capsys, valid_puzzle_board):
+def test_puzzle_with_difficulty(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    valid_puzzle_board: Board,
+) -> None:
     """Given the puzzle command with a difficulty option,
     When the CLI runs,
     Then the requested difficulty is used and the puzzle is printed."""
@@ -124,7 +141,11 @@ def test_puzzle_with_difficulty(monkeypatch, capsys, valid_puzzle_board):
     assert captured.out == str(valid_puzzle_board) + "\n"
 
 
-def test_puzzle_with_clues(monkeypatch, capsys, valid_puzzle_board):
+def test_puzzle_with_clues(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    valid_puzzle_board: Board,
+) -> None:
     """Given the puzzle command with a clue-count option,
     When the CLI runs,
     Then the requested clue count is used and the puzzle is printed."""
@@ -153,7 +174,11 @@ def test_puzzle_with_clues(monkeypatch, capsys, valid_puzzle_board):
     assert captured.out == str(valid_puzzle_board) + "\n"
 
 
-def test_puzzle_with_output(monkeypatch, tmp_path, valid_puzzle_board):
+def test_puzzle_with_output(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    valid_puzzle_board: Board,
+) -> None:
     """Given the puzzle command with an output path,
     When the CLI runs,
     Then the generated puzzle is saved to that path."""
@@ -191,7 +216,11 @@ def test_puzzle_with_output(monkeypatch, tmp_path, valid_puzzle_board):
     assert saved["filename"] == str(output_file)
 
 
-def test_solve_command(monkeypatch, capsys, valid_puzzle_board):
+def test_solve_command(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    valid_puzzle_board: Board,
+) -> None:
     """Given the solve command with a solvable input file,
     When the CLI runs,
     Then the solved Sudoku is printed."""
@@ -221,7 +250,11 @@ def test_solve_command(monkeypatch, capsys, valid_puzzle_board):
     assert captured.out == str(valid_puzzle_board) + "\n"
 
 
-def test_solve_unsolvable(monkeypatch, capsys, valid_puzzle_board):
+def test_solve_unsolvable(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    valid_puzzle_board: Board,
+) -> None:
     """Given the solve command with an unsolvable input file,
     When the CLI runs,
     Then a no-solution message is printed."""
@@ -251,7 +284,11 @@ def test_solve_unsolvable(monkeypatch, capsys, valid_puzzle_board):
     assert captured.out == "The Sudoku has no solution.\n"
 
 
-def test_solve_with_output(monkeypatch, tmp_path, valid_puzzle_board):
+def test_solve_with_output(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    valid_puzzle_board: Board,
+) -> None:
     """Given the solve command with an output path,
     When the CLI runs,
     Then the solved Sudoku is saved to that path."""
@@ -301,7 +338,11 @@ def test_solve_with_output(monkeypatch, tmp_path, valid_puzzle_board):
     assert saved["filename"] == str(output_file)
 
 
-def test_validate_valid(monkeypatch, capsys, valid_puzzle_board):
+def test_validate_valid(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    valid_puzzle_board: Board,
+) -> None:
     """Given the validate command with a valid Sudoku file,
     When the CLI runs,
     Then a valid-status message is printed."""
@@ -331,7 +372,11 @@ def test_validate_valid(monkeypatch, capsys, valid_puzzle_board):
     assert captured.out == "The Sudoku is valid.\n"
 
 
-def test_validate_invalid(monkeypatch, capsys, valid_puzzle_board):
+def test_validate_invalid(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    valid_puzzle_board: Board,
+) -> None:
     """Given the validate command with an invalid Sudoku file,
     When the CLI runs,
     Then an invalid-status message is printed."""
@@ -361,7 +406,10 @@ def test_validate_invalid(monkeypatch, capsys, valid_puzzle_board):
     assert captured.out == "The Sudoku is invalid.\n"
 
 
-def test_no_command(monkeypatch, capsys):
+def test_no_command(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     """Given the CLI is invoked without a command,
     When the CLI runs,
     Then usage information and available commands are displayed."""
@@ -383,7 +431,9 @@ def test_no_command(monkeypatch, capsys):
     assert "validate" in captured.out
 
 
-def test_save_board_error(monkeypatch, valid_puzzle_board):
+def test_save_board_error(
+    monkeypatch: pytest.MonkeyPatch, valid_puzzle_board: Board
+) -> None:
     """Given a save operation that raises a ValueError,
     When the CLI saves the board,
     Then the CLI exits with an error."""
@@ -407,7 +457,9 @@ def test_save_board_error(monkeypatch, valid_puzzle_board):
             parser
         )
 
-def test_load_board_unsupported_format(tmp_path, capsys):
+def test_load_board_unsupported_format(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     """Given an input file with an unsupported format,
     When the CLI loads the board,
     Then it exits with an error listing supported formats."""
@@ -424,7 +476,9 @@ def test_load_board_unsupported_format(tmp_path, capsys):
     assert "Unsupported file format" in captured.err
     assert "Supported formats are: .txt, .csv" in captured.err
 
-def test_puzzle_generation_error(monkeypatch, capsys):
+def test_puzzle_generation_error(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
     """Given the puzzle command with an invalid clue count,
     When the CLI runs,
     Then it exits with an error describing the allowed range."""
@@ -442,7 +496,9 @@ def test_puzzle_generation_error(monkeypatch, capsys):
     captured = capsys.readouterr()
     assert "clues must be between 17 and 81" in captured.err
 
-def test_cli_entry_point_without_command(monkeypatch, capsys):
+def test_cli_entry_point_without_command(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
     """Given the module entry point is invoked without a command,
     When the module runs,
     Then usage information and commands are displayed."""
@@ -467,7 +523,11 @@ def test_cli_entry_point_without_command(monkeypatch, capsys):
     ],
 )
 
-def test_puzzle_rejects_clues_and_difficulty(monkeypatch, capsys, options):
+def test_puzzle_rejects_clues_and_difficulty(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    options: list[str],
+) -> None:
     """Given the puzzle command with both clues and difficulty options,
     When the CLI runs,
     Then it exits with an error without generating a puzzle."""
@@ -499,10 +559,10 @@ def test_puzzle_rejects_clues_and_difficulty(monkeypatch, capsys, options):
     assert "--difficulty" in captured.err
 
 def test_save_reports_missing_directory_without_traceback(
-    tmp_path,
-    capsys,
-    valid_puzzle_board,
-):
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    valid_puzzle_board: Board,
+) -> None:
     """Given an output path whose directory does not exist,
     When the CLI saves the board,
     Then it exits with a readable error and no traceback."""
@@ -520,7 +580,9 @@ def test_save_reports_missing_directory_without_traceback(
     assert repr(str(filename)) in captured.err
     assert "Traceback" not in captured.err
 
-def test_puzzle_generation_failure_is_reported(monkeypatch, capsys):
+def test_puzzle_generation_failure_is_reported(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
     """Given puzzle generation that raises a RuntimeError,
     When the CLI runs,
     Then it exits with a readable error and no traceback."""
