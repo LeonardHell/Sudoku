@@ -391,6 +391,7 @@ Sudoku/
 │       ├── io.py
 │       └── cli.py
 ├── tests/
+│   ├── conftest.py
 │   ├── test_board.py
 │   ├── test_validator.py
 │   ├── test_solver.py

@@ -73,40 +73,35 @@ def test_board_accepts_boundary_values(value):
     "row, column",
     [(-1, 0), (9, 0), (0, -1), (0, 9)],
 )
-def test_set_rejects_indices_outside_board(row, column):
+def test_set_rejects_indices_outside_board(row, column, empty_board):
     """Given an index outside the board,
     When a cell is updated,
     Then an IndexError is raised."""
 
-    board = Board([[0] * 9 for _ in range(9)])
-
     with pytest.raises(IndexError, match="between 0 and 8"):
-        board.set(row, column, 5)
+        empty_board.set(row, column, 5)
 
 
-def test_set_rejects_non_integer_values():
+def test_set_rejects_non_integer_values(empty_board):
     """Given a board and a non-integer cell value,
     When the cell is updated,
     Then a ValueError is raised."""
 
-    board = Board([[0] * 9 for _ in range(9)])
-
     with pytest.raises(ValueError, match="must be integers"):
-        board.set(0, 0, "5")
+        empty_board.set(0, 0, "5")
 
 
-def test_rejected_set_does_not_change_board():
+def test_rejected_set_does_not_change_board(empty_board):
     """Given a cell with an existing value,
     When an invalid update is rejected,
     Then the existing value is unchanged."""
 
-    board = Board([[0] * 9 for _ in range(9)])
-    board.set(0, 0, 5)
+    empty_board.set(0, 0, 5)
 
     with pytest.raises(ValueError):
-        board.set(0, 0, 10)
+        empty_board.set(0, 0, 10)
 
-    assert board.get(0, 0) == 5
+    assert empty_board.get(0, 0) == 5
 
 
 def test_board_copies_input_rows():
@@ -146,17 +141,14 @@ def test_board_value_can_be_read():
     assert board.get(2, 4) == 7
 
 
-def test_board_value_can_be_changed():
+def test_board_value_can_be_changed(empty_board):
     """Given an empty board,
     When one cell is updated,
     Then its new value can be read."""
 
-    values = [[0] * 9 for _ in range(9)]
+    empty_board.set(2, 4, 7)
 
-    board = Board(values)
-    board.set(2, 4, 7)
-
-    assert board.get(2, 4) == 7
+    assert empty_board.get(2, 4) == 7
 
 def test_board_str():
     """Given a populated board,

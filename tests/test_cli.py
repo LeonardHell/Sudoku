@@ -6,27 +6,10 @@ import runpy
 import pytest
 
 from sudoku_toolkit import cli
-from sudoku_toolkit.board import Board
 from sudoku_toolkit.solver import is_valid
 
 
-VALID_VALUES = [
-    [5, 3, 0, 0, 7, 0, 0, 0, 0],
-    [6, 0, 0, 1, 9, 5, 0, 0, 0],
-    [0, 9, 8, 0, 0, 0, 0, 6, 0],
-    [8, 0, 0, 0, 6, 0, 0, 0, 3],
-    [4, 0, 0, 8, 0, 3, 0, 0, 1],
-    [7, 0, 0, 0, 2, 0, 0, 0, 6],
-    [0, 6, 0, 0, 0, 0, 2, 8, 0],
-    [0, 0, 0, 4, 1, 9, 0, 0, 5],
-    [0, 0, 0, 0, 8, 0, 0, 7, 9],
-]
-
-
-VALID_BOARD = Board(VALID_VALUES)
-
-
-def test_generate_command(monkeypatch, capsys):
+def test_generate_command(monkeypatch, capsys, valid_puzzle_board):
     """Given the generate command with no output path,
     When the CLI runs,
     Then the generated Sudoku is printed."""
@@ -40,17 +23,17 @@ def test_generate_command(monkeypatch, capsys):
     monkeypatch.setattr(
         cli,
         "generate_solution",
-        lambda: VALID_BOARD
+        lambda: valid_puzzle_board
     )
 
     cli.main()
 
     captured = capsys.readouterr()
 
-    assert captured.out == str(VALID_BOARD) + "\n"
+    assert captured.out == str(valid_puzzle_board) + "\n"
 
 
-def test_generate_with_output(monkeypatch, tmp_path):
+def test_generate_with_output(monkeypatch, tmp_path, valid_puzzle_board):
     """Given the generate command with an output path,
     When the CLI runs,
     Then the generated Sudoku is saved to that path."""
@@ -66,7 +49,7 @@ def test_generate_with_output(monkeypatch, tmp_path):
     monkeypatch.setattr(
         cli,
         "generate_solution",
-        lambda: VALID_BOARD
+        lambda: valid_puzzle_board
     )
 
     saved = {}
@@ -84,11 +67,11 @@ def test_generate_with_output(monkeypatch, tmp_path):
 
     cli.main()
 
-    assert saved["board"] is VALID_BOARD
+    assert saved["board"] is valid_puzzle_board
     assert saved["filename"] == str(output_file)
 
 
-def test_puzzle_command(monkeypatch, capsys):
+def test_puzzle_command(monkeypatch, capsys, valid_puzzle_board):
     """Given the puzzle command with default options,
     When the CLI runs,
     Then the generated puzzle is printed."""
@@ -102,17 +85,17 @@ def test_puzzle_command(monkeypatch, capsys):
     monkeypatch.setattr(
         cli,
         "generate_puzzle",
-        lambda difficulty=None: VALID_BOARD
+        lambda difficulty=None: valid_puzzle_board
     )
 
     cli.main()
 
     captured = capsys.readouterr()
 
-    assert captured.out == str(VALID_BOARD) + "\n"
+    assert captured.out == str(valid_puzzle_board) + "\n"
 
 
-def test_puzzle_with_difficulty(monkeypatch, capsys):
+def test_puzzle_with_difficulty(monkeypatch, capsys, valid_puzzle_board):
     """Given the puzzle command with a difficulty option,
     When the CLI runs,
     Then the requested difficulty is used and the puzzle is printed."""
@@ -126,7 +109,7 @@ def test_puzzle_with_difficulty(monkeypatch, capsys):
     def fake_generate_puzzle(difficulty=None):
         """Check the requested difficulty and return the shared test board."""
         assert difficulty == "hard"
-        return VALID_BOARD
+        return valid_puzzle_board
 
     monkeypatch.setattr(
         cli,
@@ -138,10 +121,10 @@ def test_puzzle_with_difficulty(monkeypatch, capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == str(VALID_BOARD) + "\n"
+    assert captured.out == str(valid_puzzle_board) + "\n"
 
 
-def test_puzzle_with_clues(monkeypatch, capsys):
+def test_puzzle_with_clues(monkeypatch, capsys, valid_puzzle_board):
     """Given the puzzle command with a clue-count option,
     When the CLI runs,
     Then the requested clue count is used and the puzzle is printed."""
@@ -155,7 +138,7 @@ def test_puzzle_with_clues(monkeypatch, capsys):
     def fake_generate_puzzle(clues=None):
         """Check the requested clue count and return the shared test board."""
         assert clues == 30
-        return VALID_BOARD
+        return valid_puzzle_board
 
     monkeypatch.setattr(
         cli,
@@ -167,10 +150,10 @@ def test_puzzle_with_clues(monkeypatch, capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == str(VALID_BOARD) + "\n"
+    assert captured.out == str(valid_puzzle_board) + "\n"
 
 
-def test_puzzle_with_output(monkeypatch, tmp_path):
+def test_puzzle_with_output(monkeypatch, tmp_path, valid_puzzle_board):
     """Given the puzzle command with an output path,
     When the CLI runs,
     Then the generated puzzle is saved to that path."""
@@ -186,7 +169,7 @@ def test_puzzle_with_output(monkeypatch, tmp_path):
     monkeypatch.setattr(
         cli,
         "generate_puzzle",
-        lambda difficulty=None: VALID_BOARD
+        lambda difficulty=None: valid_puzzle_board
     )
 
     saved = {}
@@ -204,11 +187,11 @@ def test_puzzle_with_output(monkeypatch, tmp_path):
 
     cli.main()
 
-    assert saved["board"] is VALID_BOARD
+    assert saved["board"] is valid_puzzle_board
     assert saved["filename"] == str(output_file)
 
 
-def test_solve_command(monkeypatch, capsys):
+def test_solve_command(monkeypatch, capsys, valid_puzzle_board):
     """Given the solve command with a solvable input file,
     When the CLI runs,
     Then the solved Sudoku is printed."""
@@ -222,23 +205,23 @@ def test_solve_command(monkeypatch, capsys):
     monkeypatch.setattr(
         cli,
         "load_board",
-        lambda filename: VALID_BOARD
+        lambda filename: valid_puzzle_board
     )
 
     monkeypatch.setattr(
         cli,
         "solve",
-        lambda board: VALID_BOARD
+        lambda board: valid_puzzle_board
     )
 
     cli.main()
 
     captured = capsys.readouterr()
 
-    assert captured.out == str(VALID_BOARD) + "\n"
+    assert captured.out == str(valid_puzzle_board) + "\n"
 
 
-def test_solve_unsolvable(monkeypatch, capsys):
+def test_solve_unsolvable(monkeypatch, capsys, valid_puzzle_board):
     """Given the solve command with an unsolvable input file,
     When the CLI runs,
     Then a no-solution message is printed."""
@@ -252,7 +235,7 @@ def test_solve_unsolvable(monkeypatch, capsys):
     monkeypatch.setattr(
         cli,
         "load_board",
-        lambda filename: VALID_BOARD
+        lambda filename: valid_puzzle_board
     )
 
     monkeypatch.setattr(
@@ -268,7 +251,7 @@ def test_solve_unsolvable(monkeypatch, capsys):
     assert captured.out == "The Sudoku has no solution.\n"
 
 
-def test_solve_with_output(monkeypatch, tmp_path):
+def test_solve_with_output(monkeypatch, tmp_path, valid_puzzle_board):
     """Given the solve command with an output path,
     When the CLI runs,
     Then the solved Sudoku is saved to that path."""
@@ -290,13 +273,13 @@ def test_solve_with_output(monkeypatch, tmp_path):
     monkeypatch.setattr(
         cli,
         "load_board",
-        lambda filename: VALID_BOARD
+        lambda filename: valid_puzzle_board
     )
 
     monkeypatch.setattr(
         cli,
         "solve",
-        lambda board: VALID_BOARD
+        lambda board: valid_puzzle_board
     )
 
     saved = {}
@@ -314,11 +297,11 @@ def test_solve_with_output(monkeypatch, tmp_path):
 
     cli.main()
 
-    assert saved["board"] is VALID_BOARD
+    assert saved["board"] is valid_puzzle_board
     assert saved["filename"] == str(output_file)
 
 
-def test_validate_valid(monkeypatch, capsys):
+def test_validate_valid(monkeypatch, capsys, valid_puzzle_board):
     """Given the validate command with a valid Sudoku file,
     When the CLI runs,
     Then a valid-status message is printed."""
@@ -332,7 +315,7 @@ def test_validate_valid(monkeypatch, capsys):
     monkeypatch.setattr(
         cli,
         "load_board",
-        lambda filename: VALID_BOARD
+        lambda filename: valid_puzzle_board
     )
 
     monkeypatch.setattr(
@@ -348,7 +331,7 @@ def test_validate_valid(monkeypatch, capsys):
     assert captured.out == "The Sudoku is valid.\n"
 
 
-def test_validate_invalid(monkeypatch, capsys):
+def test_validate_invalid(monkeypatch, capsys, valid_puzzle_board):
     """Given the validate command with an invalid Sudoku file,
     When the CLI runs,
     Then an invalid-status message is printed."""
@@ -362,7 +345,7 @@ def test_validate_invalid(monkeypatch, capsys):
     monkeypatch.setattr(
         cli,
         "load_board",
-        lambda filename: VALID_BOARD
+        lambda filename: valid_puzzle_board
     )
 
     monkeypatch.setattr(
@@ -400,7 +383,7 @@ def test_no_command(monkeypatch, capsys):
     assert "validate" in captured.out
 
 
-def test_save_board_error(monkeypatch):
+def test_save_board_error(monkeypatch, valid_puzzle_board):
     """Given a save operation that raises a ValueError,
     When the CLI saves the board,
     Then the CLI exits with an error."""
@@ -419,7 +402,7 @@ def test_save_board_error(monkeypatch):
 
     with pytest.raises(SystemExit):
         cli._save_board(
-            VALID_BOARD,
+            valid_puzzle_board,
             "puzzle.json",
             parser
         )
@@ -515,7 +498,11 @@ def test_puzzle_rejects_clues_and_difficulty(monkeypatch, capsys, options):
     assert "--clues" in captured.err
     assert "--difficulty" in captured.err
 
-def test_save_reports_missing_directory_without_traceback(tmp_path, capsys):
+def test_save_reports_missing_directory_without_traceback(
+    tmp_path,
+    capsys,
+    valid_puzzle_board,
+):
     """Given an output path whose directory does not exist,
     When the CLI saves the board,
     Then it exits with a readable error and no traceback."""
@@ -524,7 +511,7 @@ def test_save_reports_missing_directory_without_traceback(tmp_path, capsys):
     parser = argparse.ArgumentParser()
 
     with pytest.raises(SystemExit) as error:
-        cli._save_board(VALID_BOARD, filename, parser)
+        cli._save_board(valid_puzzle_board, filename, parser)
 
     assert error.value.code == 2
 
