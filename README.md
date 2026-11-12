@@ -340,7 +340,7 @@ If an attempt cannot reach the requested clue count, generation restarts with a 
 
 Board representation, rule validation, solving, generation, file operations, and the command-line interface are implemented in separate modules.
 
-The grid has only 81 cells, so compact Python integer bitmasks avoid repeated candidate scans without adding NumPy or SciPy as runtime dependencies. These libraries are useful for large numerical arrays, but are unnecessary for this small constraint-search workload.
+A benchmark comparing the scan-based solver at commit `7731443` on `main` with the bitmask solver on `project-revision` measured the current solver as 5.9x-24.4x faster across five fixed puzzles on the tested machine. NumPy search functions and a NumPy validator were slower than the corresponding Python implementations in these measurements. The package continues to have no runtime dependencies. See [Benchmarking](#benchmarking) for the command, puzzle data, and results; they are measurements, not guarantees for every machine or puzzle.
 
 ## Limitations
 
@@ -377,10 +377,41 @@ Regression tests cover the solution-count limit, directly modified invalid board
 
 Randomized generation tests use a fixed seed. The exhausted-attempts error path is tested using a controlled replacement of solution counting.
 
+## Benchmarking
+
+Run the comparison from the repository root while on the `project-revision` branch. It loads the baseline package directly from commit `7731443` without changing branches:
+
+```powershell
+python benchmarks\benchmark_revisions.py --seed 42 --repeats 5 --search-iterations 5 --validator-iterations 100
+```
+
+The benchmark imports `solve`, `count_solutions`, and `is_valid` from both the current package and the baseline commit. It also compares equivalent NumPy implementations of solving, solution counting, and validation. NumPy is optional; install it separately with `python -m pip install numpy` to include those comparisons. Without NumPy, the script still compares both repository versions, including their validators. Search and validator timings use repeated batches and report median per-call time. The script prints both commit hashes, Python and NumPy versions, and all batch settings; it also warns if the working tree is dirty.
+
+The 35- and 25-clue boards were generated sequentially with `random.seed(42)` and then saved as fixed data in the benchmark script. The other fixed puzzles are the 30-clue example and two multiple-solution puzzles with 21 and 7 clues. The command's `--seed 42` controls the reproducible order in which the benchmark processes puzzles; all puzzle grids are printed by the script.
+
+On Windows 10 with Python 3.11.7 and NumPy 1.26.4, one run measured these median time ratios. `Baseline/current` above 1 means the current solver is faster than the baseline. `Current/NumPy` below 1 means the NumPy search took longer than the current solver:
+
+| Puzzle | Operation | Baseline/current | Current/NumPy |
+|--------|-----------|-----------------:|--------------:|
+| Classic, 30 clues | Solve | 9.26x | 0.02x |
+| Classic, 30 clues | Count up to two | 10.50x | 0.02x |
+| Seeded, 35 clues | Solve | 6.42x | 0.03x |
+| Seeded, 35 clues | Count up to two | 5.89x | 0.02x |
+| Seeded, 25 clues | Solve | 13.76x | 0.01x |
+| Seeded, 25 clues | Count up to two | 16.34x | 0.01x |
+| Multiple solutions, 21 clues | Solve | 16.58x | 0.01x |
+| Multiple solutions, 21 clues | Count up to two | 16.57x | 0.01x |
+| Multiple solutions, 7 clues | Solve | 24.43x | 0.01x |
+| Multiple solutions, 7 clues | Count up to two | 23.49x | 0.01x |
+
+For validation of valid puzzles, `Baseline/current` ranged from 1.12x to 3.04x, and `Current/NumPy` ranged from 0.13x to 0.18x. The NumPy validator took about 372-423 microseconds per valid board, compared with about 49-75 microseconds for the current validator. These small-grid measurements do not show a performance reason to replace the pure-Python validator or add NumPy as a dependency. Timings are local and vary with the machine and system load.
+
 ## Project structure
 
 ```text
 Sudoku/
+├── benchmarks/
+│   └── benchmark_revisions.py
 ├── src/
 │   └── sudoku_toolkit/
 │       ├── __init__.py
