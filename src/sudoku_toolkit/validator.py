@@ -7,9 +7,18 @@ from .board import Board
 
 def _unit_is_valid(values: Iterable[int]) -> bool:
     """Return whether non-empty values in one Sudoku unit are unique."""
-    # Zero represents an empty cell and may appear multiple times in a unit.
-    numbers = [value for value in values if value != 0]
-    return len(numbers) == len(set(numbers))
+    used_digits = 0
+    for value in values:
+        # Zero represents an empty cell and may appear multiple times in a unit.
+        if value == 0:
+            continue
+
+        bit = 1 << (value - 1)
+        if used_digits & bit:
+            return False
+        used_digits |= bit
+
+    return True
 
 
 def is_valid(board: Board) -> bool:
@@ -25,25 +34,23 @@ def is_valid(board: Board) -> bool:
         # Invalid dimensions or cell values are validation failures, not crashes.
         return False
     
-    # Check rows
     for row in board.values:
         if not _unit_is_valid(row):
             return False
 
-    # Check columns
     # Unpacking rows transposes the grid so each resulting tuple is one column.
     for column in zip(*board.values):
         if not _unit_is_valid(column):
             return False
 
-    # Check 3x3 blocks
+    # Check blocks lazily to avoid allocating a temporary list for each one.
     for row_start in range(0, 9, 3):
         for column_start in range(0, 9, 3):
-            block = []
-
-            for row in range(row_start, row_start + 3):
-                for column in range(column_start, column_start + 3):
-                    block.append(board.values[row][column])
+            block = (
+                value
+                for row in board.values[row_start:row_start + 3]
+                for value in row[column_start:column_start + 3]
+            )
 
             if not _unit_is_valid(block):
                 return False

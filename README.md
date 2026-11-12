@@ -330,17 +330,17 @@ Saving overwrites an existing file. The destination directory must already exist
 
 ## Implementation
 
-The solver uses recursive backtracking. It selects an empty cell using a Minimum Remaining Values heuristic, prioritizing cells with few valid candidates, and tries numbers from 1 to 9.
+The solver uses recursive backtracking and integer bitmasks to track which digits are already used in each row, column, and 3x3 block. Candidate lookup then uses bit operations rather than rescanning all three units for every trial number. It selects an empty cell using a Minimum Remaining Values heuristic, prioritizing cells with few valid candidates.
 
-If a candidate leads to a dead end, the solver restores the empty cell and tries another candidate.
+If a candidate leads to a dead end, the solver restores both the empty cell and its corresponding masks before trying another candidate. Solution counting uses the same masks and stops once the requested limit is reached.
 
-Solution counting uses the same search strategy. Recursive calls receive the remaining solution limit, so the result cannot exceed the specified positive limit.
-
-The generator creates a complete board using randomized backtracking. It then attempts to remove numbers in random order, keeping each removal only if the puzzle still has exactly one solution.
+The generator also maintains row, column, and block masks while filling a complete board with randomized backtracking. It then attempts to remove numbers in random order, keeping each removal only if the puzzle still has exactly one solution.
 
 If an attempt cannot reach the requested clue count, generation restarts with a new complete board, up to `max_attempts`.
 
 Board representation, rule validation, solving, generation, file operations, and the command-line interface are implemented in separate modules.
+
+The grid has only 81 cells, so compact Python integer bitmasks avoid repeated candidate scans without adding NumPy or SciPy as runtime dependencies. These libraries are useful for large numerical arrays, but are unnecessary for this small constraint-search workload.
 
 ## Limitations
 

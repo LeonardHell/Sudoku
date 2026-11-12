@@ -4,7 +4,8 @@ import random
 
 from .board import Board
 from .solver import (
-    _is_valid_move,
+    _build_masks,
+    _candidate_mask,
     count_solutions
 )
 
@@ -22,26 +23,53 @@ def _generate_solution(values: list[list[int]]) -> bool:
     the cell to zero. Returns whether a complete solution was found.
     """
 
-    empty_position = _find_empty_position(values)
+    row_masks, column_masks, block_masks = _build_masks(values)
+    return _generate_solution_with_masks(
+        values, row_masks, column_masks, block_masks
+    )
 
+
+def _generate_solution_with_masks(
+    values: list[list[int]],
+    row_masks: list[int],
+    column_masks: list[int],
+    block_masks: list[int],
+) -> bool:
+    """Fill the grid while maintaining used-digit masks incrementally."""
+    empty_position = _find_empty_position(values)
     if empty_position is None:
         return True
 
     row, column = empty_position
+    block = (row // 3) * 3 + column // 3
+    candidates = _candidate_mask(
+        row, column, row_masks, column_masks, block_masks
+    )
 
-    numbers = list(range(1, 10))
+    numbers = []
+    while candidates:
+        bit = candidates & -candidates
+        candidates ^= bit
+        numbers.append(bit)
     # Shuffling changes the search order, producing varied valid solutions.
     random.shuffle(numbers)
 
-    for number in numbers:
-        if _is_valid_move(values, row, column, number):
-            values[row][column] = number
+    for bit in numbers:
+        values[row][column] = bit.bit_length()
+        row_masks[row] |= bit
+        column_masks[column] |= bit
+        block_masks[block] |= bit
 
-            if _generate_solution(values):
-                return True
+        if _generate_solution_with_masks(
+            values, row_masks, column_masks, block_masks
+        ):
+            return True
 
-            # The recursive branch failed; restore the empty cell for backtracking.
-            values[row][column] = 0
+        # The recursive branch failed; restore the grid and its masks.
+        values[row][column] = 0
+        row_masks[row] ^= bit
+        column_masks[column] ^= bit
+        block_masks[block] ^= bit
 
     return False
 
