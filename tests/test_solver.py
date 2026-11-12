@@ -13,15 +13,16 @@ from sudoku_toolkit.solver import (
     _count_solutions_with_masks
 )
 
-def test_solver_solves_sudoku(valid_puzzle_board: Board) -> None:
+def test_solver_solves_sudoku(valid_puzzle_board: Board, solved_board: Board) -> None:
     """Given a solvable Sudoku puzzle,
     When the puzzle is solved,
     Then a complete valid solution is returned."""
 
-    solved_board = solve(valid_puzzle_board)
+    solved_puzzle = solve(valid_puzzle_board)
 
-    assert solved_board is not None
-    assert is_valid(solved_board)
+    assert solved_puzzle is not None
+    assert solved_puzzle.values == solved_board.values
+    assert is_valid(solved_puzzle)
 
 
 def test_solver_preserves_given_values(valid_puzzle_values: list[list[int]]) -> None:
