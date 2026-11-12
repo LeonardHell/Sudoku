@@ -1,5 +1,7 @@
 """Tests for Sudoku solving, move selection, and solution counting."""
 
+import pytest
+
 from sudoku_toolkit import Board
 from sudoku_toolkit.validator import is_valid
 from sudoku_toolkit.solver import (
@@ -7,7 +9,8 @@ from sudoku_toolkit.solver import (
     _get_possible_values,
     _find_empty_position,
     count_solutions,
-    _is_valid_move
+    _is_valid_move,
+    _count_solutions_with_masks
 )
 
 def test_solver_solves_sudoku(valid_puzzle_board):
@@ -148,3 +151,19 @@ def test_count_solution_returns_0(multiple_solution_board):
     Then the count is zero."""
 
     assert count_solutions(multiple_solution_board, limit=0) == 0
+
+@pytest.mark.parametrize("number", [0, 10])
+def test_is_valid_move_rejects_out_of_range_number(valid_puzzle_values, number):
+    """Given a candidate outside the allowed range,
+    When the move is checked,
+    Then the move is rejected."""
+    assert not _is_valid_move(valid_puzzle_values, 0, 2, number)
+
+def test_count_solutions_with_zero_internal_limit(empty_board):
+    """Given an empty board and a zero solution limit,
+    When the internal solution counter is called,
+    Then the count is zero."""
+    masks = [0] * 9
+    assert _count_solutions_with_masks(
+        empty_board.values, 0, masks, masks.copy(), masks.copy()
+    ) == 0
